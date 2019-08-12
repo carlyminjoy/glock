@@ -1,27 +1,41 @@
 <template>
   <div class="game">
-    <h1>Melody makers</h1>
+    <div class="game-container">
+      <h1>Mel-o-die</h1>
+      <h3 :class="{'show' : status.gameStarted }">Round: {{ status.currentRound }}</h3>
 
-    <svg width="800" height="350">
-      <key
-        v-for="(settings, note) in notes"
-        v-on:play="userPlaysNote"
-        :id="note"
-        :key="note"
-        :note="settings"
-      />
-    </svg>
+      <svg width="600" height="300">
+        <key
+          v-for="(settings, note) in notes"
+          v-on:play="userPlaysNote"
+          :id="note"
+          :key="note"
+          :note="settings"
+        />
+      </svg>
 
-    <div class="actions">
-      <button v-if="!status.gameStarted" @click="startGame()">Go</button>
-      <button v-if="status.melodyReady && status.gameStarted" @click="listen()">Listen</button>
+      <p>{{status.message}}</p>
+
+      <template v-if="status.gameOver">
+        <h4>G A M E O V E R</h4>
+        <p>
+          <strong>{{ status.winner }} wins.</strong>
+        </p>
+        <p>
+          You made it to round
+          <strong>{{status.currentRound}}</strong>! Try again?
+        </p>
+      </template>
+
+      <div class="actions">
+        <button v-if="!status.gameStarted || status.gameOver" @click="startGame()">Go</button>
+        <button v-if="status.melodyReady && status.gameStarted" @click="listen()">Listen</button>
+      </div>
+
+      <audio v-for="(settings, note) in notes" :id="note" preload="auto" :key="note">
+        <source :src="settings.sound" type="audio/wav" />
+      </audio>
     </div>
-
-    <h3>{{ status.message }}</h3>
-
-    <audio v-for="(settings, note) in notes" :id="note" preload="auto" :key="note">
-      <source :src="settings.sound" type="audio/wav" />
-    </audio>
   </div>
 </template>
 
@@ -42,8 +56,9 @@ export default {
       guesses: [],
       notes: notes,
       status: {
-        message: "Ready?",
+        message: "",
         gameStarted: false,
+        currentRound: 1,
         melodyReady: false,
         listening: false,
         guessing: false,
@@ -65,22 +80,23 @@ export default {
       } else if (this.status.adding) {
         this.melody.push(note);
         this.play(note);
+        this.status.adding = false;
+        this.status.currentRound++;
 
-        this.status.message =
-          "Okay, here's the new melody! Waiting for Player 2 ...";
+        this.status.message = `Okay, here's the new melody! Waiting for ${this.status.playerTwo} ...`;
         this.playMelody(1000);
 
         // AI makes a move
-        setTimeout(() => {
-          this.aiMove(), 10000;
-        });
+        this.aiMove(this.melody.length * 2000);
       }
     },
-    aiMove() {
-      this.melody.push(this.getRandomNote());
-      this.clearGuesses();
-      this.status.message = "Your turn!";
-      this.status.melodyReady = true;
+    aiMove(delay) {
+      setTimeout(() => {
+        this.melody.push(this.getRandomNote());
+        this.clearGuesses();
+        this.status.message = `${this.status.playerTwo} has made a move - your turn!`;
+        this.status.melodyReady = true;
+      }, delay);
     },
     submitGuess() {
       let correct = true;
@@ -96,7 +112,8 @@ export default {
         this.status.message = "Nice! Now add another note.";
       } else {
         this.status.gameOver = true;
-        this.status.message = "Too bad! Game over :(";
+        this.status.winner = this.status.playerTwo;
+        this.status.message = "";
       }
     },
     play(note) {
@@ -120,33 +137,46 @@ export default {
     },
     clearStatus() {
       this.status.melodyReady = false;
+      this.status.currentRound = 1;
       this.status.gameStarted = false;
       this.status.listening = false;
       this.status.guessing = false;
       this.status.adding = false;
       this.status.gameOver = false;
-      this.status.message = "Ready?";
+      this.status.winner = null;
+      this.status.playerTwo = "Buddy";
+      //   this.status.message = "";
     },
     startGame() {
+      this.clearMelody();
+      this.clearGuesses();
+      this.clearStatus();
+
       this.status.gameStarted = true;
+      this.status.message =
+        "Click to listen to the melody. Listen carefully, as you'll have to repeat it.";
       // Run AI until 2-player option available
-      this.createMelody(1000, 4);
+      this.createMelody(1000, 1);
     },
     createMelody(speed, count) {
       this.reset();
-      this.status.message = "Listen and repeat.";
 
       for (let i = 0; i < count; i++) {
         this.melody.push(this.getRandomNote());
       }
 
       this.status.melodyReady = true;
-      console.log(this.melody);
     },
     listen() {
+      //     let timer = 30;
+      // this.setTimeout(() => {
+      //     this.status.timer = timer;
+      //     timer--;
+      // }, 1000)
       this.status.listening = true;
       this.status.melodyReady = false;
       this.playMelody(1000);
+      this.status.message = "Listen and repeat.";
     },
     getRandomNote() {
       let notes = ["c", "d", "e", "f", "g", "a", "b", "c2"];
@@ -186,17 +216,38 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
-div.game {
-  cursor: url("https://cdn.imgbin.com/13/17/18/imgbin-percussion-mallet-glockenspiel-drum-stick-xylophone-drum-stick-sVpUBXmd4ja6qqG77z1GyW1cx_t.jpg"),
-    auto;
-}
-button {
-  padding: 10px 15px;
-  margin: 10px;
-  font-size: 16px;
-  background: #eee;
-  text-transform: uppercase;
-  font-weight: bold;
-  border-radius: 4px;
+.game {
+  .game-container {
+    padding: 60px;
+    button {
+      padding: 10px 15px;
+      margin: 10px;
+      font-size: 16px;
+      background: #eee;
+      text-transform: uppercase;
+      font-weight: bold;
+      border-radius: 4px;
+    }
+
+    h3 {
+      visibility: hidden;
+
+      &.show {
+        visibility: visible;
+      }
+    }
+
+    h4 {
+      color: red;
+      font-weight: 800;
+    }
+
+    h1,
+    h3,
+    h4,
+    p {
+      transition: 0.3s ease-in-out;
+    }
+  }
 }
 </style>

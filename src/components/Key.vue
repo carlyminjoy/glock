@@ -31,7 +31,7 @@ export default {
       rx: 20,
       ry: 20,
       height: null,
-      width: 80
+      width: 60
     };
   },
   methods: {
@@ -40,15 +40,15 @@ export default {
     }
   },
   mounted() {
-    this.x = this.note.order * 100;
-    this.height = 350 - this.note.order * 15;
+    this.x = this.note.order * 70;
+    this.height = 300 - this.note.order * 15;
   }
 };
 </script>
 
 <style scoped lang='scss'>
 .key {
-  width: 90px;
+  /* width: 90px; */
   transition: 0.2s ease-in-out;
 
   &.lit {
