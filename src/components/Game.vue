@@ -14,22 +14,24 @@
         />
       </svg>
 
-      <p>{{status.message}}</p>
+      <p>{{ status.message }}</p>
+      <spinner v-if="status.waiting"></spinner>
 
       <template v-if="status.gameOver">
         <h4>G A M E O V E R</h4>
         <p>
           <strong>{{ status.winner }} wins.</strong>
         </p>
+        <br />
         <p>
           You made it to round
-          <strong>{{status.currentRound}}</strong>! Try again?
+          <strong>{{ status.currentRound }}</strong>! Try again?
         </p>
       </template>
 
       <div class="actions">
-        <button v-if="!status.gameStarted || status.gameOver" @click="startGame()">Go</button>
-        <button v-if="status.melodyReady && status.gameStarted" @click="listen()">Listen</button>
+        <button class="btn" v-if="!status.gameStarted || status.gameOver" @click="startGame()">Go</button>
+        <button class="btn" v-if="status.melodyReady && status.gameStarted" @click="listen()">Listen</button>
       </div>
 
       <audio v-for="(settings, note) in notes" :id="note" preload="auto" :key="note">
@@ -42,13 +44,15 @@
 <script>
 import { default as Key } from "./Key";
 import { default as notes } from "./../config/notes";
+import { default as Spinner } from "./../../node_modules/vue-spinners/src/components/CubeSpinner";
 
 export default {
   props: {
     msg: String
   },
   components: {
-    Key
+    Key,
+    Spinner
   },
   data() {
     return {
@@ -60,6 +64,7 @@ export default {
         gameStarted: false,
         currentRound: 1,
         melodyReady: false,
+        waiting: false,
         listening: false,
         guessing: false,
         adding: false,
@@ -81,6 +86,7 @@ export default {
         this.melody.push(note);
         this.play(note);
         this.status.adding = false;
+        this.status.waiting = true;
         this.status.currentRound++;
 
         this.status.message = `Okay, here's the new melody! Waiting for ${this.status.playerTwo} ...`;
@@ -96,6 +102,7 @@ export default {
         this.clearGuesses();
         this.status.message = `${this.status.playerTwo} has made a move - your turn!`;
         this.status.melodyReady = true;
+        this.status.waiting = false;
       }, delay);
     },
     submitGuess() {
@@ -143,6 +150,7 @@ export default {
       this.status.guessing = false;
       this.status.adding = false;
       this.status.gameOver = false;
+      this.status.waiting = false;
       this.status.winner = null;
       this.status.playerTwo = "Buddy";
       //   this.status.message = "";
@@ -214,19 +222,33 @@ export default {
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="scss">
+<style lang="scss">
+@import "./../styles/variables.scss";
+
 .game {
   .game-container {
-    padding: 60px;
+    padding: 40px;
+
+    div.spinner {
+      margin: 20px auto;
+      .cube1 {
+        background-color: $color4 !important;
+      }
+      .cube2 {
+        background-color: $color6 !important;
+      }
+    }
+
+    svg {
+      margin: 30px auto;
+    }
+
     button {
-      padding: 10px 15px;
-      margin: 10px;
-      font-size: 16px;
-      background: #eee;
+      font-weight: 800;
+      margin-top: 10px;
+      background: $primary;
+      color: #fff;
       text-transform: uppercase;
-      font-weight: bold;
-      border-radius: 4px;
     }
 
     h3 {
@@ -238,7 +260,7 @@ export default {
     }
 
     h4 {
-      color: red;
+      color: $color8;
       font-weight: 800;
     }
 

@@ -26,7 +26,7 @@ export default {
   g: {
     order: 4,
     lit: false,
-    color: "#2374AB",
+    color: "#FF5964",
     sound: "g.wav"
   },
   a: {
@@ -38,7 +38,7 @@ export default {
   b: {
     order: 6,
     lit: false,
-    color: "#FF5964",
+    color: "#2374AB",
     sound: "b.wav"
   },
   c2: {
