@@ -1,13 +1,22 @@
 <template>
   <div id="app">
-    <div class="page-container">
-      <game />
-      <chat />
+
+    <div v-if='!game' class='waiting-container'>
+      <waiting @newgame="initGame" />
     </div>
+
+    <transition name='fade'>
+      <div v-if='game' class="game-chat-container">
+        <game :game='game' :username='username'/>
+        <chat :game='game' :username='username'/>
+      </div>
+    </transition>
+
   </div>
 </template>
 
 <script>
+import Waiting from "./components/Waiting.vue"
 import Game from "./components/Game.vue";
 import Chat from "./components/Chat.vue";
 
@@ -15,7 +24,28 @@ export default {
   name: "app",
   components: {
     Game,
-    Chat
+    Chat,
+    Waiting
+  },
+  data() {
+    return {
+      game: null,
+      username: null
+    }
+  },
+  methods: {
+    initGame(data) {
+      this.username = data.username;
+      this.game = {
+        player1: data.username,
+        player2: data.challenger.username,
+        round: 1,
+        userTurn: data.username,
+        winner: null,
+        melody: [],
+        step: 'add' // 'add', 'listen', 'guess
+      }
+    }
   }
 };
 </script>
@@ -35,7 +65,7 @@ body {
   margin: 0;
   padding: 0;
 
-  .page-container {
+  .game-chat-container {
     margin: 0 auto;
     display: flex;
     /* flex-wrap: wrap; */
