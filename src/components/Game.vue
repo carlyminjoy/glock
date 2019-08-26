@@ -1,8 +1,8 @@
 <template>
   <div class="game">
     <div class="game-container">
-      <h1>Mel-o-die</h1>
-      <h3 :class="{'show' : status.gameStarted }">Round: {{ status.currentRound }}</h3>
+      <h1>glock</h1>
+      <h5 class='round' :class="{'show' : status.gameStarted }">Round: {{ status.currentRound }}</h5>
 
       <svg width="600" height="300">
         <key
@@ -18,7 +18,7 @@
       <spinner v-if="status.waiting"></spinner>
 
       <template v-if="status.gameOver">
-        <h4>G A M E O V E R</h4>
+        <h5 class='gameover'>GAMEOVER</h5>
         <p>
           <strong>{{ status.winner }} wins.</strong>
         </p>
@@ -229,13 +229,28 @@ export default {
   .game-container {
     padding: 40px;
 
+    h5 {
+      letter-spacing: 2px;
+      font-weight: 900;
+      padding: 15px;
+      text-transform: uppercase;
+
+      &.round {
+        color: $color3;
+      }
+
+      &.gameover {
+        color: $color8;
+      }
+    }
+
     div.spinner {
       margin: 20px auto;
       .cube1 {
-        background-color: $color4 !important;
+        background-color: $color3 !important;
       }
       .cube2 {
-        background-color: $color6 !important;
+        background-color: $primary !important;
       }
     }
 
@@ -244,9 +259,10 @@ export default {
     }
 
     button {
-      font-weight: 800;
-      margin-top: 10px;
-      background: $primary;
+      font-weight: 600;
+      letter-spacing: 1px;
+      margin-top: 15px;
+      background: $color3;
       color: #fff;
       text-transform: uppercase;
     }
@@ -257,11 +273,6 @@ export default {
       &.show {
         visibility: visible;
       }
-    }
-
-    h4 {
-      color: $color8;
-      font-weight: 800;
     }
 
     h1,

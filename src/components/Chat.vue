@@ -3,15 +3,10 @@
     <h4>Chatting with {{ playerTwo }}</h4>
 
     <div class="chat-container">
-      <div
-        class="message"
-        :class="{'enemy' : message.author == playerTwo }"
-        v-for="(message, index) in messages"
-        :key="index"
-      >
-        <p class="author">{{message.author }}</p>
-        <p>{{ message.message }}</p>
-      </div>
+      <message v-for="(message, index) in messages"
+        :enemy="message.author == playerTwo"
+        :message='message'
+        :key="index"></message>
 
       <div class="input-container">
         <input class="form-control" v-model="message" @keyup.enter="postMessage(user, message)" />
@@ -22,7 +17,9 @@
 </template>
 
 <script>
+
 import axios from "axios";
+import { default as Message } from './Message'
 
 export default {
   name: "Chat",
@@ -40,6 +37,9 @@ export default {
       type: String
     }
   },
+  components: {
+    Message
+  },
   watch: {
     winner(next, prev) {}
   },
@@ -53,7 +53,8 @@ export default {
     postMessage(author, message) {
       this.messages.push({
         author: author,
-        message: message
+        message: message,
+        datetime: new Date()
       });
 
       if (author != this.playerTwo) {
@@ -102,44 +103,15 @@ export default {
   height: 100vh;
   padding: 30px;
   position: relative;
-  overflow-y: scroll;
+  // overflow-y: auto;
 
   .chat-container {
     max-height: 85%;
-    overflow-y: scroll;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
   }
-}
-
-.message {
-  /* background: lightblue; */
-  background: $color3;
-  border-radius: 4px 4px 0 4px;
-  font-size: 14px;
-  text-align: left;
-  padding: 10px 15px;
-  margin: 10px 0;
-  margin-left: 30px;
-}
-.message.enemy {
-  margin-left: 0;
-  margin-right: 30px;
-  background: #eee;
-  border-radius: 4px 4px 4px 0;
-}
-
-p {
-  margin: 0;
-}
-
-.author {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  font-weight: bold;
-  margin-bottom: 4px;
 }
 
 .input-container {
