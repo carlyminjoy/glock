@@ -1,201 +1,239 @@
 <template>
-	<div class="game">
-		<div class="game-container">
-			<h1>glockenspiel says</h1>
-			<h5>Round {{ game.round }}</h5>
-			<p :class="{'hide' : game.winner}" class='move'>
-				<span :class="{ 'enemy' : game.userTurn == challenger }"> {{ game.userTurn }}'s move</span>
-			</p>
+  <div class="game">
+    <div class="game-container">
+      <h1>glockenspiel says</h1>
+      <h5>Round {{ game.round }}</h5>
+      <div v-if="game.step =='guess' && !game.winner" class="timer">{{ timer }}</div>
 
-			<svg width="600" height="300">
-				<key
-					v-for="(settings, note) in notes"
-					v-on:play="userPlaysNote"
-					:id="note"
-					:key="note"
-					:note="settings"
-				/>
-			</svg>
+      <svg width="600" height="300">
+        <key
+          v-for="(settings, note) in notes"
+          v-on:play="userPlaysNote"
+          :id="note"
+          :key="note"
+          :note="settings"
+        />
+      </svg>
 
-				<p v-if='!game.winner'>
-					<span v-if='game.userTurn != username'>Nice moves. Waiting on {{ challenger }} ... </span>
+      <p v-if="!game.winner">
+        <span v-if="game.userTurn != username">Nice moves. Waiting on {{ challenger }} ...</span>
 
-					<span v-else>
+        <span v-else>
+          <span v-if="game.step == 'listen'">{{ challenger }} has made a move.</span>
 
-						<span v-if='game.step == "listen"'>
-							<span v-if='game.round != 1'>{{ challenger }} has made a move.</span>
-						</span>
+          <span v-else-if="game.step == 'add'">
+            <span v-if="game.round == 1">Add the first note.</span>
+            <span v-else>Add another note.</span>
+          </span>
 
-						<span v-else-if='game.step == "add"'>
+          <span v-else-if="game.step == 'guess'">Now play it back.</span>
+        </span>
+      </p>
 
-							<span v-if='game.round == 1'>Add the first note.</span>
-							<span v-else>Add another note.</span>
+      <spinner v-if="!game.winner && game.userTurn != username"></spinner>
 
-						</span>
+      <transition name="gameover">
+        <div v-if="game.winner">
+          <h5 v-if="game.winner == challenger" class="gameover">GAMEOVER</h5>
+          <h5 v-else class="winner">WINNER</h5>
+          <p>
+            <strong>{{ game.winner }} wins.</strong>
+          </p>
+        </div>
+      </transition>
 
-						<span v-else-if='game.step == "guess"'>
+      <div class="actions">
+        <button
+          class="btn"
+          v-if="game.userTurn == username && game.step == 'listen'"
+          @click="listen()"
+        >Listen</button>
+      </div>
 
-							Now play it back.
+      <!-- TEMP AI ACTIONS -->
+      <button v-if="game.userTurn == challenger" class="btn ai" @click="aiMove()">AI MOVE</button>
 
-						</span>
-
-					</span>
-				</p>
-
-				<spinner v-if="game.userTurn != username"></spinner>
-				
-				<template v-if="game.winner">
-					<h5 class='gameover'>GAMEOVER</h5>
-					<p>
-						<strong>{{ game.winner }} wins.</strong>
-					</p>
-				</template>
-				<div class="actions">
-					<button class="btn" v-if="game.userTurn == username && game.step == 'listen'" @click="listen()">Listen</button>
-				</div>
-
-			<audio v-for="(settings, note) in notes" :id="note" preload="auto" :key="note">
-				<source :src="settings.sound" type="audio/wav" />
-			</audio>
-		</div>
-	</div>
+      <audio v-for="(settings, note) in notes" :id="note" preload="auto" :key="note">
+        <source :src="settings.sound" type="audio/wav" />
+      </audio>
+    </div>
+  </div>
 </template>
 
 <script>
-
 import { default as Key } from "./Key";
 import { default as notes } from "./../config/notes";
 import { default as Spinner } from "./../../node_modules/vue-spinners/src/components/CubeSpinner";
-import { setTimeout } from 'timers';
+import { setTimeout } from "timers";
 
 export default {
-	props: {
-		game: {
-			type: Object
-		},
-		username: {
-			type: String
-		}
-	},
-	components: {
-		Key,
-		Spinner
-	},
-	data() {
-		return {
-			guesses: [],
-			notes: notes,
-			challenger: null
-		}
-	},
-	mounted() {
-		console.log(this.game)
-		this.challenger = this.game.player1 == this.username ? this.game.player2 : this.game.player1
-	},
-	computed: {
-		step() {
-			return this.game.step
-		}
-	},
-	watch: {
-		step(next, prev) {
-			console.log(next)
-		}
-	},
-	methods: {
-		userPlaysNote(note) {
-			if (this.game.userTurn == this.username) {
+  props: {
+    game: {
+      type: Object
+    },
+    username: {
+      type: String
+    }
+  },
+  components: {
+    Key,
+    Spinner
+  },
+  data() {
+    return {
+      guesses: [],
+      notes: notes,
+      challenger: null,
+      speed: 1000,
+      timer: 0
+    };
+  },
+  mounted() {
+    if (this.game.mode == "hard") {
+      this.speed = 500;
+    }
 
-				if (this.game.step == 'guess') {
+    this.challenger =
+      this.game.player1 == this.username
+        ? this.game.player2
+        : this.game.player1;
+  },
+  computed: {
+    step() {
+      return this.game.step;
+    }
+  },
+  watch: {
+    step(next, prev) {
+      console.log(next);
+    }
+  },
+  methods: {
+    userPlaysNote(note) {
+      if (this.game.userTurn == this.username) {
+        if (this.game.step == "guess") {
+          this.guesses.push(note);
+          this.play(note);
 
-					this.guesses.push(note);
-					this.play(note);
-	
-					if (this.game.melody.length == this.guesses.length) {
-						this.submitGuess();
-					}
-				} else if (this.game.step == 'add') {
-					this.game.melody.push(note);
-					this.play(note);
+          if (
+            this.guesses[this.guesses.length - 1] !=
+            this.game.melody[this.guesses.length - 1]
+          ) {
+            console.log("guesses", this.guesses);
+            console.log("melody", this.game.melody);
+            this.game.winner = this.challenger;
+          }
 
-					// End turn, pass to challenger
-					this.game.userTurn = this.challenger;
-					this.game.round++;
-					this.game.step = 'listen';
+          if (this.game.melody.length == this.guesses.length) {
+            this.submitGuess();
+          }
+        } else if (this.game.step == "add") {
+          this.game.melody.push(note);
+          this.play(note);
 
-					// AI makes a move
-					this.aiMove(this.game.melody.length * 2000);
-				}
-			}
-		},
-		aiMove(delay) {
-			setTimeout(() => {
-				this.game.melody.push(this.getRandomNote());
-				this.game.userTurn = this.username;
-				this.game.step = 'listen';
-			}, delay);
-		},
-		submitGuess() {
-			let correct = true;
+          // End turn, pass to challenger
+          this.game.userTurn = this.challenger;
+          this.game.round++;
+          this.game.step = "listen";
+        }
+      }
+    },
+    aiMove() {
+      let randNum = Math.floor(Math.random() * 10);
 
-			this.game.melody.forEach((note, i) => {
-				if (note != this.guesses[i]) {
-					correct = false;
-				}
-			});
+      if (randNum > (this.game.mode == "hard" ? 9 : 5)) {
+        this.game.winner = this.username;
+      } else {
+        this.game.melody.push(this.getRandomNote());
+        this.game.round++;
+        this.game.userTurn = this.username;
+        this.game.step = "listen";
+      }
+    },
+    submitGuess() {
+      let correct = true;
 
-			correct
-				? this.game.step = 'add'
-				: this.game.winner = this.challenger;
-			
-			this.guesses = [];
-		},
-		play(note) {
-			this.lightKey(note);
-			this.playSound(note);
-		},
-		playSound(note) {
-			let audio = document.getElementById(note);
+      this.game.melody.forEach((note, i) => {
+        if (note != this.guesses[i]) {
+          correct = false;
+        }
+      });
 
-			audio.pause();
-			audio.currentTime = 0;
-			audio.play();
-		},
-		lightKey(note) {
-			this.notes[note].lit = true;
-			setTimeout(() => (this.notes[note].lit = false), 400);
-		},
-		reset() {
-			this.clearMelody();
-			this.clearGuesses();
-		},
-		listen() {
-			this.playMelody(1000);
-			this.game.step = null;
+      correct ? (this.game.step = "add") : (this.game.winner = this.challenger);
 
-			setTimeout(() => {
-				this.game.step = 'guess';
-			}, this.game.melody.length * 1000 + 1000)
-		},
-		getRandomNote() {
-			let notes = ["c", "d", "e", "f", "g", "a", "b", "c2"];
-			let randIndex = Math.floor(Math.random() * 8);
-			return notes[randIndex];
-		},
-		playMelody(speed) {
-			let x = 0;
+      this.guesses = [];
+    },
+    play(note) {
+      if (
+        this.game.mode == "easy" ||
+        ["guess", "add"].includes(this.game.step)
+      ) {
+        this.lightKey(note);
+      }
+      this.playSound(note);
+    },
+    playSound(note) {
+      let audio = document.getElementById(note);
 
-			let intervalId = setInterval(() => {
-				if (!this.game.melody[x]) {
-					clearInterval(intervalId);
-				} else {
-					this.play(this.game.melody[x]);
-				}
+      audio.pause();
+      audio.currentTime = 0;
+      audio.play();
+    },
+    lightKey(note) {
+      this.notes[note].lit = true;
+      setTimeout(() => (this.notes[note].lit = false), 400);
+    },
+    reset() {
+      this.clearMelody();
+      this.clearGuesses();
+    },
+    listen() {
+      this.playMelody(this.speed);
+      this.game.step = null;
 
-				x++;
-			}, speed);
-		}
-	}
+      setTimeout(() => {
+        this.game.step = "guess";
+        let timer = parseInt(
+          (5000 + this.speed * this.game.melody.length * 2) / 1000
+        );
+
+        console.log("timer", timer);
+        this.startTimer(timer);
+      }, this.game.melody.length * this.speed + 1000);
+    },
+    startTimer(num) {
+      let vm = this;
+      vm.timer = num;
+      let countdown = setInterval(function() {
+        vm.timer = vm.timer - 1;
+
+        if (vm.game.step == "add") {
+          clearInterval(countdown);
+        } else if (vm.timer < 1) {
+          clearInterval(countdown);
+          vm.game.winner = vm.challenger;
+        }
+      }, 1000);
+    },
+    getRandomNote() {
+      let notes = ["c", "d", "e", "f", "g", "a", "b", "c2"];
+      let randIndex = Math.floor(Math.random() * 8);
+      return notes[randIndex];
+    },
+    playMelody(speed) {
+      let x = 0;
+
+      let intervalId = setInterval(() => {
+        if (!this.game.melody[x]) {
+          clearInterval(intervalId);
+        } else {
+          this.play(this.game.melody[x]);
+        }
+
+        x++;
+      }, speed);
+    }
+  }
 };
 </script>
 
@@ -203,97 +241,132 @@ export default {
 @import "./../styles/variables.scss";
 
 .game {
-	.game-container {
-		padding: 40px;
+  .game-container {
+    padding: 40px;
 
-		h1 {
-			margin-bottom: 45px;
-		}
+    div.timer {
+      position: absolute;
+      left: 30px;
+      top: 30px;
+      color: $color8;
+      font-weight: 800;
+      font-size: 32px;
+    }
 
-		h5 {
-			letter-spacing: 2px;
-			font-weight: 900;
-			padding: 0;
-			text-transform: uppercase;
-			color: $primary;
-			margin: 0;
+    h1 {
+      margin-bottom: 30px;
+    }
 
-			&.gameover {
-				color: $color8;
-				margin-bottom: 15px;
-			}
-		}
+    h5 {
+      letter-spacing: 2px;
+      font-weight: 900;
+      padding: 0;
+      text-transform: uppercase;
+      color: $primary;
+      margin: 0;
 
-		p.move {
-			font-weight: 900;
+      &.gameover {
+        color: $color8;
+        margin-bottom: 15px;
+      }
 
-			&.hide {
-				visibility:hidden;
-			}
+      &.winner {
+        color: $color3;
+        margin-bottom: 15px;
+      }
+    }
 
-			span {
-				color: $color3;
-				&.enemy {
-					color: $color8;
-				}
-			}
-		}
+    p.move {
+      font-weight: 900;
 
-		div.spinner {
-			margin: 30px auto 0;
-			.cube1 {
-				background-color: $color3 !important;
-			}
-			.cube2 {
-				background-color: $color8 !important;
-			}
-		}
+      &.hide {
+        visibility: hidden;
+      }
 
-		svg {
-			margin: 30px auto;
-		}
+      span {
+        color: $color3;
+        &.enemy {
+          color: $color8;
+        }
+      }
+    }
 
-		button {
-			font-weight: 600;
-			letter-spacing: 1px;
-			margin-top: 15px;
-			background: $color3;
-			color: #fff;
-			text-transform: uppercase;
-		}
+    div.spinner {
+      margin: 30px auto 0;
+      .cube1 {
+        background-color: $color3 !important;
+      }
+      .cube2 {
+        background-color: $color8 !important;
+      }
+    }
 
-		h3 {
-			visibility: hidden;
+    svg {
+      margin: 30px auto;
+    }
 
-			&.show {
-				visibility: visible;
-			}
-		}
+    button {
+      &.ai {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+      }
+      font-weight: 600;
+      letter-spacing: 1px;
+      margin-top: 10px;
+      background: $color3;
+      color: #fff;
+      text-transform: uppercase;
+      transition: 0.3s ease;
 
-		h1,
-		h3,
-		h4,
-		p {
-			transition: 0.3s ease-in-out;
-		}
-	}
+      &:hover {
+        background: $color7;
+      }
+    }
+
+    h3 {
+      visibility: hidden;
+
+      &.show {
+        visibility: visible;
+      }
+    }
+
+    h1,
+    h3,
+    h4,
+    p {
+      transition: 0.3s ease-in-out;
+    }
+  }
 }
 
-.fade-enter-active, .fade-leave-active {
-		transition: opacity .5s;
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
 }
 
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-		opacity: 0;
+  opacity: 0;
 }
 
-.fade2-enter-active, .fade2-leave-active {
-		transition: opacity .5s;
-		transition-delay: 1s;
+.fade2-enter-active,
+.fade2-leave-active {
+  transition: opacity 0.5s;
+  transition-delay: 0.5s;
 }
 
 .fade2-enter, .fade2-leave-to /* .fade-leave-active below version 2.1.8 */ {
-		opacity: 0;
+  opacity: 0;
 }
 
+.gameover-enter-active,
+.gameover-leave-active {
+  transition: opacity 3s;
+}
+
+.gameover-enter,
+.gameover-leave-to {
+  opacity: 0;
+}
 </style>

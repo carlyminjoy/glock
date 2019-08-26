@@ -52,7 +52,11 @@ export default {
   transition: 0.2s ease-in-out;
 
   &.lit {
-    fill: #555;
+    fill: silver;
+  }
+  cursor: pointer;
+  &:hover {
+    fill: silver !important;
   }
 }
 </style>
