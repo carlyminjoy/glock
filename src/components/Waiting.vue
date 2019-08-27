@@ -36,7 +36,7 @@ export default {
   data() {
     return {
       onlineUsers: [],
-      username: null
+      newUsername: null
     };
   },
   mounted() {
@@ -47,6 +47,11 @@ export default {
   computed: {
       availableUsers() {
           return this.onlineUsers.filter(u => u.id != this.$socket.client.id)
+      },
+      username() {
+        let username = this.existingUsername ? this.existingUsername : this.newUsername;
+
+        return username
       }
   },
   sockets: {
@@ -96,7 +101,7 @@ export default {
       }
 
       this.$socket.client.emit('newUser', user)
-      this.username = e.target.value;
+      this.newUsername = e.target.value;
     }
   }
 };

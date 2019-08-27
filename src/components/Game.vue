@@ -94,7 +94,7 @@ export default {
 			this.game = game;
 		},
 		updateUsers(users) {
-			let challengerDisconnected = users.filter(u => u.id == this.challenger.id).length > 0;
+			let challengerDisconnected = users.filter(u => u.id == this.challenger.id).length == 0;
 
 			if (challengerDisconnected) {
 				this.game.winner = this.user.username

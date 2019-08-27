@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <div v-if="!game" class="waiting-container">
+    <div v-show="!game" class="waiting-container">
       <waiting :existing-username='username'/>
     </div>
 
