@@ -1,12 +1,12 @@
 <template>
   <div id="app">
     <div v-if="!game" class="waiting-container">
-      <waiting />
+      <waiting :existing-username='username'/>
     </div>
 
     <transition name="fade">
       <div v-if="game" class="game-chat-container">
-        <game :game="game" :username="username" />
+        <game @gameover='endGame()' :game="game" :username="username" />
         <chat :game="game" :username="username" />
       </div>
     </transition>
@@ -30,6 +30,11 @@ export default {
       game: null,
       username: null
     };
+  },
+  methods: {
+    endGame() {
+      this.game = null;
+    }
   },
   sockets: {
     connect() {

@@ -81,8 +81,15 @@ export default {
   },
   sockets: {
     newMsg(msg) {
-	  this.messages.push(msg)
-    }
+	    this.messages.push(msg)
+    },
+    updateUsers(users) {
+			let challengerDisconnected = users.filter(u => u.id == this.challenger.id).length > 0;
+
+			if (challengerDisconnected) {
+				this.postMessage(this.challenger, '[disconnected]')
+			}
+		}
   },
   created() {
     this.user = this.game.player1.id == this.$socket.client.id ? this.game.player1 : this.game.player2;

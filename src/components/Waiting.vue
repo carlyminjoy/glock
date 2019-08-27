@@ -32,9 +32,26 @@
 <script>
 export default {
   name: "Waiting",
+  props: ['existingUsername'],
   data() {
     return {
-      onlineUsers: [
+      onlineUsers: [],
+      username: null
+    };
+  },
+  mounted() {
+    if (this.existingUsername) {
+      this.username = this.existingUsername
+    }
+  },
+  computed: {
+      availableUsers() {
+          return this.onlineUsers.filter(u => u.id != this.$socket.client.id)
+      }
+  },
+  sockets: {
+    updateUsers(users) {
+      this.onlineUsers = [
         {
           id: 1,
           username: "Glocktopus"
@@ -46,19 +63,9 @@ export default {
         {
           id: 3,
           username: "Glocktavia"
-        }
-      ],
-      username: null
-    };
-  },
-  computed: {
-      availableUsers() {
-          return this.onlineUsers.filter(u => u.id != this.$socket.client.id)
-      }
-  },
-  sockets: {
-    newUser(user) {
-      this.onlineUsers.push(user);
+        },
+        ...users
+      ]
     }
   },
   methods: {
