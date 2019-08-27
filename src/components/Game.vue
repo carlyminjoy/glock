@@ -1,6 +1,9 @@
 <template>
+
 	<div class="game">
+
 		<div class="game-container">
+
 			<h1>beat<br>the<br><strong>glock</strong></h1>
 			<h5>Round {{ game.round }}</h5>
 			<div v-if="game.step =='guess' && !game.winner" class="timer">{{ timer }}</div>
@@ -8,7 +11,7 @@
 			<svg width="600" height="300">
 				<key
 					v-for="(settings, note) in notes"
-					v-on:play="userPlaysNote"
+					v-on:play="userPlay"
 					:id="note"
 					:key="note"
 					:note="settings"
@@ -16,6 +19,7 @@
 			</svg>
 
 			<p v-if="!game.winner">
+
 				<span v-if="game.userTurn != user.username">
 					<span v-if="game.round > 1">Nice moves. </span>Waiting on {{ challenger.username }} ...</span>
 
@@ -29,12 +33,15 @@
 
 					<span v-else-if="game.step == 'guess'">Now play it back.</span>
 				</span>
+
 			</p>
 
 			<spinner v-if="!game.winner && game.userTurn != user.username"></spinner>
 
 			<transition name="gameover">
+
 				<div v-if="game.winner">
+
 					<h5 v-if="game.winner == challenger.username" class="gameover">GAMEOVER</h5>
 					<h5 v-else class="winner">WINNER</h5>
 					<p>
@@ -43,38 +50,41 @@
 
 					<button class='btn ai' @click="backToLobby()">Back to lobby</button>
 				</div>
+
 			</transition>
 
 			<div class="actions">
+
 				<button
 					class="btn"
 					v-if="game.userTurn == user.username && game.step == 'listen'"
 					@click="listen()"
 				>Listen</button>
+
 			</div>
 
 			<!-- TEMP AI ACTIONS -->
-			<button v-if="game.userTurn == challenger.username && !game.winner" class="btn ai" @click="aiMove()">AI MOVE</button>
+			<button v-if="game.player2.id < 5 && game.userTurn == challenger.username && !game.winner" class="btn ai" @click="aiMove()">AI MOVE</button>
 
 			<audio v-for="(settings, note) in notes" :id="note" preload="auto" :key="note">
 				<source :src="settings.sound" type="audio/wav" />
 			</audio>
+
 		</div>
+
 	</div>
+
 </template>
 
 <script>
+
+import { mapState, mapGetters } from 'vuex';
 import { default as Key } from "./Key";
 import { default as notes } from "./../config/notes";
 import { default as Spinner } from "./../../node_modules/vue-spinners/src/components/CubeSpinner";
 import { setTimeout } from "timers";
 
 export default {
-	props: {
-		game: {
-			type: Object
-		}
-	},
 	components: {
 		Key,
 		Spinner
@@ -89,9 +99,12 @@ export default {
 			timer: 0
 		};
 	},
+	computed: mapState([
+		'username', 'game'
+	]),
 	sockets: {
 		newMove(game) {
-			this.game = game;
+			this.$store.commit('setGame', game)
 		},
 		updateUsers(users) {
 			let challengerDisconnected = users.filter(u => u.id == this.challenger.id).length == 0;
@@ -102,6 +115,13 @@ export default {
 		}
 	},
 	created() {
+		console.log('game', this.game);
+
+		this.user = {
+			username: this.username,
+			id: this.$socket.client.id
+		}
+
 		if (this.game.mode == "hard") {
 			this.speed = 500;
 		}
@@ -111,9 +131,10 @@ export default {
 	},
 	methods: {
 		backToLobby() {
-			this.$emit('gameover')
+			this.$store.commit('setGame', null)
+			this.$router.push('/')
 		},
-		userPlaysNote(note) {
+		userPlay(note) {
 			if (this.game.userTurn == this.user.username) {
 
 				if (this.game.step == "guess") {
@@ -129,27 +150,22 @@ export default {
 			this.guesses.push(note);
 			this.play(note);
 
-			if (
-				this.guesses[this.guesses.length - 1] !=
-				this.game.melody[this.guesses.length - 1]
-			) {
-				console.log("guesses", this.guesses);
-				console.log("melody", this.game.melody);
-				this.game.winner = this.challenger.username;
-			}
+			let guessIndex = this.guesses.length - 1;
 
 			if (this.game.melody.length == this.guesses.length) {
 				this.submitGuess();
+			} else if (this.guesses[guessIndex] != this.game.melody[guessIndex]) {
+				this.game.winner = this.challenger.username;
 			}
 		},
 		userAdd(note) {
-				this.game.melody.push(note);
-				this.play(note);
+			this.game.melody.push(note);
+			this.play(note);
 
-				// End turn, pass to challenger
-				this.game.userTurn = this.challenger.username;
-				this.game.round++;
-				this.game.step = "listen";
+			// End turn, pass to challenger
+			this.game.userTurn = this.challenger.username;
+			this.game.round++;
+			this.game.step = "listen"; // TODO set all .step = to a store mutation
 		},
 		aiMove() {
 			let randNum = Math.floor(Math.random() * 10);
@@ -196,10 +212,6 @@ export default {
 			this.notes[note].lit = true;
 			setTimeout(() => (this.notes[note].lit = false), 400);
 		},
-		reset() {
-			this.clearMelody();
-			this.clearGuesses();
-		},
 		listen() {
 			this.playMelody(this.speed);
 			this.game.step = null;
@@ -217,14 +229,16 @@ export default {
 		startTimer(num) {
 			let vm = this;
 			vm.timer = num;
+
 			let countdown = setInterval(function() {
 				vm.timer = vm.timer - 1;
 
-				if (vm.game.step == "add") {
+				if (vm.$store.getters.game.step == "add") {
 					clearInterval(countdown);
 				} else if (vm.timer < 1) {
 					clearInterval(countdown);
-					vm.game.winner = vm.challenger.username;
+
+					vm.$store.commit('setWinner', vm.challenger.username)
 				}
 			}, 1000);
 		},
