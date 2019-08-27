@@ -15,7 +15,7 @@
         </h3>
 
         <ul>
-          <li v-for="user in onlineUsers" :key="user.id">
+          <li v-for="user in availableUsers" :key="user.id">
             <div class="name">{{ user.username }}</div>
 
             <div class="modes">
@@ -36,23 +36,59 @@ export default {
     return {
       onlineUsers: [
         {
-          id: 1234,
-          username: "Glochtopus"
+          id: 1,
+          username: "Glocktopus"
+        },
+        {
+          id: 2,
+          username: "Glockerspaniel"
+        },
+        {
+          id: 3,
+          username: "Glocktavia"
         }
       ],
       username: null
     };
   },
+  computed: {
+      availableUsers() {
+          return this.onlineUsers.filter(u => u.id != this.$socket.client.id)
+      }
+  },
+  sockets: {
+    newUser(user) {
+      this.onlineUsers.push(user);
+    }
+  },
   methods: {
     challenge(challenger, mode = "easy") {
-      this.$emit("newgame", {
-        challenger: challenger,
-        username: this.username,
+      let game = {
+        player1: {
+          username: this.username,
+          id: this.$socket.client.id
+        },
+        player2: challenger,
+        round: 1,
+        userTurn: this.username,
+        winner: null,
+        melody: [],
+        step: "add", // add, listen, guess
         mode: mode
-      });
+      };
+
+      this.$socket.client.emit('startGame', game);
+
     },
     addUsername(e) {
       e.preventDefault();
+
+      let user = {
+          id: this.$socket.client.id,
+          username: e.target.value
+      }
+
+      this.$socket.client.emit('newUser', user)
       this.username = e.target.value;
     }
   }
@@ -61,15 +97,6 @@ export default {
 
 <style lang='scss'>
 @import "./../styles/variables.scss";
-
-%boxshadow {
-  -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.09),
-    0 3px 3px rgba(0, 0, 0, 0.12);
-  -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.09), 0 3px 3px rgba(0, 0, 0, 0.12);
-  -ms-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.09), 0 3px 3px rgba(0, 0, 0, 0.12);
-  -o-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.09), 0 3px 3px rgba(0, 0, 0, 0.12);
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.09), 0 3px 3px rgba(0, 0, 0, 0.12);
-}
 
 .waiting-container {
   padding: 40px;
@@ -83,10 +110,10 @@ export default {
 
     input {
       width: 400px;
-      padding: 12px;
+      padding: 5px;
       color: $primary;
       border: 2px solid $primary;
-      font-size: 18px;
+      font-size: 24px;
       text-align: center;
       font-weight: 400;
 

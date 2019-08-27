@@ -1,7 +1,7 @@
 <template>
   <div class="game">
     <div class="game-container">
-      <h1>glockenspiel says</h1>
+      <h1>beat<br>the<br><strong>glock</strong></h1>
       <h5>Round {{ game.round }}</h5>
       <div v-if="game.step =='guess' && !game.winner" class="timer">{{ timer }}</div>
 
@@ -16,10 +16,10 @@
       </svg>
 
       <p v-if="!game.winner">
-        <span v-if="game.userTurn != username">Nice moves. Waiting on {{ challenger }} ...</span>
+        <span v-if="game.userTurn != user.username">Nice moves. Waiting on {{ challenger.username }} ...</span>
 
         <span v-else>
-          <span v-if="game.step == 'listen'">{{ challenger }} has made a move.</span>
+          <span v-if="game.step == 'listen'">{{ challenger.username }} has made a move.</span>
 
           <span v-else-if="game.step == 'add'">
             <span v-if="game.round == 1">Add the first note.</span>
@@ -30,11 +30,11 @@
         </span>
       </p>
 
-      <spinner v-if="!game.winner && game.userTurn != username"></spinner>
+      <spinner v-if="!game.winner && game.userTurn != user.username"></spinner>
 
       <transition name="gameover">
         <div v-if="game.winner">
-          <h5 v-if="game.winner == challenger" class="gameover">GAMEOVER</h5>
+          <h5 v-if="game.winner == challenger.username" class="gameover">GAMEOVER</h5>
           <h5 v-else class="winner">WINNER</h5>
           <p>
             <strong>{{ game.winner }} wins.</strong>
@@ -45,13 +45,13 @@
       <div class="actions">
         <button
           class="btn"
-          v-if="game.userTurn == username && game.step == 'listen'"
+          v-if="game.userTurn == user.username && game.step == 'listen'"
           @click="listen()"
         >Listen</button>
       </div>
 
       <!-- TEMP AI ACTIONS -->
-      <button v-if="game.userTurn == challenger" class="btn ai" @click="aiMove()">AI MOVE</button>
+      <button v-if="game.userTurn == challenger.username && !game.winner" class="btn ai" @click="aiMove()">AI MOVE</button>
 
       <audio v-for="(settings, note) in notes" :id="note" preload="auto" :key="note">
         <source :src="settings.sound" type="audio/wav" />
@@ -70,9 +70,6 @@ export default {
   props: {
     game: {
       type: Object
-    },
-    username: {
-      type: String
     }
   },
   components: {
@@ -83,20 +80,19 @@ export default {
     return {
       guesses: [],
       notes: notes,
-      challenger: null,
+	  challenger: null,
+	  user: null,
       speed: 1000,
       timer: 0
     };
   },
-  mounted() {
+  created() {
     if (this.game.mode == "hard") {
       this.speed = 500;
     }
 
-    this.challenger =
-      this.game.player1 == this.username
-        ? this.game.player2
-        : this.game.player1;
+	this.user = this.game.player1.id == this.$socket.client.id ? this.game.player1 : this.game.player2;
+	this.challenger = this.game.player1.id == this.$socket.client.id ? this.game.player2 : this.game.player1;
   },
   computed: {
     step() {
@@ -110,7 +106,7 @@ export default {
   },
   methods: {
     userPlaysNote(note) {
-      if (this.game.userTurn == this.username) {
+      if (this.game.userTurn == this.user.username) {
         if (this.game.step == "guess") {
           this.guesses.push(note);
           this.play(note);
@@ -121,7 +117,7 @@ export default {
           ) {
             console.log("guesses", this.guesses);
             console.log("melody", this.game.melody);
-            this.game.winner = this.challenger;
+            this.game.winner = this.challenger.username;
           }
 
           if (this.game.melody.length == this.guesses.length) {
@@ -132,7 +128,7 @@ export default {
           this.play(note);
 
           // End turn, pass to challenger
-          this.game.userTurn = this.challenger;
+          this.game.userTurn = this.challenger.username;
           this.game.round++;
           this.game.step = "listen";
         }
@@ -142,11 +138,11 @@ export default {
       let randNum = Math.floor(Math.random() * 10);
 
       if (randNum > (this.game.mode == "hard" ? 9 : 5)) {
-        this.game.winner = this.username;
+        this.game.winner = this.user.username;
       } else {
         this.game.melody.push(this.getRandomNote());
         this.game.round++;
-        this.game.userTurn = this.username;
+        this.game.userTurn = this.user.username;
         this.game.step = "listen";
       }
     },
@@ -159,7 +155,7 @@ export default {
         }
       });
 
-      correct ? (this.game.step = "add") : (this.game.winner = this.challenger);
+      correct ? (this.game.step = "add") : (this.game.winner = this.challenger.username);
 
       this.guesses = [];
     },
@@ -254,7 +250,16 @@ export default {
     }
 
     h1 {
-      margin-bottom: 30px;
+	  margin-bottom: 30px;
+	  font-size: 24px;
+	  line-height:20px;
+	  font-weight: 200;
+
+	  strong {
+		  color: $color7;
+		  font-weight:600;
+		  font-size: 48px;
+	  }
     }
 
     h5 {

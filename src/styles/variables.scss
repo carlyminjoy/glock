@@ -11,3 +11,12 @@ $color5: #2374ab;
 $color6: #ffe74c;
 $color7: #ff5963;
 $color8: #a30b37;
+
+%boxshadow {
+    -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.09),
+      0 3px 3px rgba(0, 0, 0, 0.12);
+    -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.09), 0 3px 3px rgba(0, 0, 0, 0.12);
+    -ms-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.09), 0 3px 3px rgba(0, 0, 0, 0.12);
+    -o-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.09), 0 3px 3px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.09), 0 3px 3px rgba(0, 0, 0, 0.12);
+}

@@ -1,10 +1,6 @@
 <template>
-  <div class="message" :class="{'enemy' : enemy }">
-    <p class="author">
-      <span class="date">{{ message.datetime | moment('H:mm A') }}</span>
-      <br />
-      {{message.author }}
-    </p>
+  <div class="message" :class="{'enemy' : enemy, 'user' : !enemy }">
+    <span class="date">{{ message.datetime | moment('H:mm A') }}</span>
     <p>{{ message.message }}</p>
   </div>
 </template>
@@ -30,20 +26,28 @@ export default {
 @import "./../styles/variables.scss";
 
 .message {
-  /* background: lightblue; */
-  background: $color3;
-  border-radius: 4px 4px 0 4px;
   font-size: 14px;
   text-align: left;
-  padding: 10px 15px;
+  padding: 5px 15px 10px 15px;
   margin: 10px 0;
-  margin-left: 30px;
+  @extend %boxshadow;
+  width:fit-content;
+
+  &.user {
+    border-radius: 10px 10px 0 10px;
+    margin: 10px 0 10px auto;
+    background: $color3;
+    // background: linear-gradient(180deg, #43f5e1 0%, $color3 40%);
+  }
 
   &.enemy {
     margin-left: 0;
     margin-right: 30px;
+    border-radius: 10px 10px 10px 0;
+    align-self:left;
     background: #eee;
-    border-radius: 4px 4px 4px 0;
+    // background: linear-gradient(180deg, #0197fc 0%, $color5 40%);
+    // color: #eee;
 
     p {
       text-transform: lowercase;
@@ -52,21 +56,15 @@ export default {
 
   p {
     margin: 0;
+    word-break:break-all;
+    line-height:18px;
+  }
 
-    &.author {
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      font-weight: 800;
-      padding-bottom: 4px;
-      margin-bottom: 4px;
-      // color: lightslategray;
-
-      & > span.date {
+    span.date {
         font-size: 8px;
-        font-weight: 400;
-      }
-    }
+        letter-spacing: 1px;
+        font-weight: 600;
+
   }
 }
 </style>

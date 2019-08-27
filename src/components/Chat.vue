@@ -2,22 +2,22 @@
   <div class="chat">
     <h5>
       Chatting with:
-      <strong>{{ challenger }}</strong>
+      <strong>{{ challenger.username }}</strong>
     </h5>
 
     <div class="chat-container">
       <transition-group name="message">
         <message
           v-for="(message, index) in messages"
-          :enemy="message.author == challenger"
+          :enemy="message.author.id == challenger.id"
           :message="message"
           :key="index"
         ></message>
       </transition-group>
 
       <div class="input-container">
-        <input class="form-control" v-model="message" @keyup.enter="postMessage(username, message)" />
-        <button class="btn btn-primary" @click.prevent="postMessage(username, message)">SEND</button>
+        <input class="form-control" v-model="message" @keyup.enter="postMessage(user, message)" />
+        <button class="btn btn-primary" @click.prevent="postMessage(user, message)">SEND</button>
         <button class="btn btn-primary" @click.prevent="aiResponse()">AI</button>
       </div>
     </div>
@@ -33,9 +33,6 @@ export default {
   props: {
     game: {
       type: Object
-    },
-    username: {
-      type: String
     }
   },
   components: {
@@ -45,18 +42,19 @@ export default {
     return {
       messages: [],
       message: "",
-      challenger: null
+	  challenger: null,
+	  user: null
     };
   },
   methods: {
     postMessage(author, message) {
-      this.messages.push({
-        author: author,
-        message: message,
-        datetime: new Date()
-      });
+		this.$socket.client.emit('addMsg', {
+        	author: author,
+        	message: message,
+        	datetime: new Date()
+      	});
 
-      this.message = "";
+      	this.message = "";
     },
     async aiResponse() {
       let message = await this.getInsult();
@@ -81,12 +79,14 @@ export default {
       });
     }
   },
-  mounted() {
-    this.challenger =
-      this.game.player1 == this.username
-        ? this.game.player2
-        : this.game.player1;
-    this.aiResponse();
+  sockets: {
+    newMsg(msg) {
+	  this.messages.push(msg)
+    }
+  },
+  created() {
+    this.user = this.game.player1.id == this.$socket.client.id ? this.game.player1 : this.game.player2;
+	this.challenger = this.game.player1.id == this.$socket.client.id ? this.game.player2 : this.game.player1;
   }
 };
 </script>
@@ -107,7 +107,7 @@ export default {
 
   .chat-container {
     max-height: 85%;
-    overflow-y: auto;
+    overflow-y: hidden;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
@@ -146,17 +146,12 @@ export default {
 .message-enter-active,
 .message-leave-active {
   transition: all 0.3s ease;
-  height: auto;
+  max-height:300px;
 }
 
 .message-enter,
 .message-leave-to {
   opacity: 0;
-  padding: 0;
-  height: 0;
-
-  * {
-    padding: 0;
-  }
+  max-height:0;
 }
 </style>

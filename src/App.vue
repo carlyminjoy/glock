@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div v-if="!game" class="waiting-container">
-      <waiting @newgame="initGame" />
+      <waiting />
     </div>
 
     <transition name="fade">
@@ -31,19 +31,12 @@ export default {
       username: null
     };
   },
-  methods: {
-    initGame(data) {
-      this.username = data.username;
-      this.game = {
-        player1: data.username,
-        player2: data.challenger.username,
-        round: 1,
-        userTurn: data.username,
-        winner: null,
-        melody: [],
-        step: "add", // 'add', 'listen', 'guess,
-        mode: data.mode
-      };
+  sockets: {
+    connect() {
+      console.log('socket connected', this.$socket.client.id)
+    },
+    newGame(game) {
+      this.game = game;
     }
   }
 };
