@@ -1,16 +1,22 @@
 <template>
+
   <div id="app">
     <div v-show="!game" class="waiting-container">
+
       <waiting :existing-username='username'/>
+
     </div>
 
     <transition name="fade">
       <div v-if="game" class="game-chat-container">
-        <game @gameover='endGame()' :game="game" :username="username" />
+
+        <game @gameover='game = null' :game="game" :username="username" />
         <chat :game="game" :username="username" />
+
       </div>
     </transition>
   </div>
+
 </template>
 
 <script>
@@ -31,17 +37,11 @@ export default {
       username: null
     };
   },
-  methods: {
-    endGame() {
-      this.game = null;
-    }
-  },
   sockets: {
-    connect() {
-      console.log('socket connected', this.$socket.client.id)
-    },
     newGame(game) {
-      this.game = game;
+      if ([game.player1.id, game.player2.id].includes(this.$socket.client.id)) {
+        this.game = game;
+      }
     }
   }
 };
