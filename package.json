@@ -5,13 +5,20 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build --public ./",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "server": "nodemon server/express.js"
   },
   "dependencies": {
     "axios": "^0.19.0",
+    "body-parser": "^1.19.0",
     "core-js": "^2.6.5",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "mongodb": "^3.3.2",
+    "nodemon": "^1.19.2",
     "sass": "^1.22.9",
     "sass-loader": "^7.1.0",
+    "socket.io": "^2.2.0",
     "socket.io-client": "^2.2.0",
     "vue": "^2.6.10",
     "vue-moment": "^4.0.0",

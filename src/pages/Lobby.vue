@@ -44,7 +44,7 @@ export default {
     },
     computed: {
 		availableUsers() {
-			return this.onlineUsers.filter(u => u.id != this.$socket.client.id)
+            return this.onlineUsers.filter(u => u.id && u.id != this.$socket.client.id && u.username != this.username)
         },
         ...mapState([
             'username'

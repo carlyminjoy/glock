@@ -1,6 +1,8 @@
 <template>
 
   <div id="app">
+    <router-link to="/leaderboard">Leaderboard</router-link>
+    <router-link to="/">Lobby</router-link>
 
     <router-view></router-view>
 

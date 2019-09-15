@@ -6,6 +6,8 @@ import io from "socket.io-client";
 import App from "./App.vue";
 import Lobby from "./pages/Lobby.vue";
 import Play from "./pages/Play.vue";
+import Leaderboard from "./pages/Leaderboard.vue";
+import axios from 'axios';
 
 const socket = io("https://beat-tha-glock.herokuapp.com");
 
@@ -22,6 +24,10 @@ const routes = [
   {
     path: "/play",
     component: Play
+  },
+  {
+    path: "/leaderboard",
+    component: Leaderboard
   }
 ];
 
@@ -73,6 +79,10 @@ const store = new Vuex.Store({
       context.commit("switchUser");
       context.commit("addRound");
       context.commit("setStep", "listen");
+    },
+    gameover(context, data) {
+        context.commit('setWinner', data.winner);
+        axios.post('/api/games', data);
     }
   }
 });
