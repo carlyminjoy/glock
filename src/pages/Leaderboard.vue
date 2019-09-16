@@ -25,7 +25,17 @@ export default {
     computed: {
         orderedResults() {
             if (!this.results) return [];
-            return this.results.sort(this.compare);
+            let unique = [];
+            this.results.forEach(r => {
+                let exists = unique.find(u => {
+                    return u.winner == r.winner
+                    && u.loser == r.loser
+                    && u.mode == r.mode
+                    && u.round == r.round
+                })
+                if (!exists) unique.push(r)
+            })
+            return unique.sort(this.compare);
         }
     },
     data() {
