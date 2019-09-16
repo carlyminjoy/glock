@@ -8,7 +8,7 @@
 				<strong>glock</strong>
 			</h1>
 
-			<h5>Round {{ game.round }}</h5>
+			<h5 class='round'>Round {{ game.round }}</h5>
 
 			<div v-if="game.step =='guess' && !game.winner" class="timer">{{ timer }}</div>
 
@@ -22,45 +22,47 @@
 				/>
 			</svg>
 
-			<p v-if="!game.winner">
-				<span v-if="game.userTurn != user.username">
-					<span v-if="game.round > 1">Nice moves.</span>
-					Waiting on {{ challenger.username }} ...
-				</span>
+            <div class='game-messages'>
+                <p v-if="!game.winner">
+                    <span v-if="game.userTurn != user.username">
+                        <span v-if="game.round > 1">Nice moves.</span>
+                        Waiting on {{ challenger.username }} ...
+                    </span>
 
-				<span v-else>
-					<span v-if="game.step == 'listen'">{{ challenger.username }} has made a move.</span>
+                    <span v-else>
+                        <span v-if="game.step == 'listen'">{{ challenger.username }} has made a move.</span>
 
-					<span v-else-if="game.step == 'add'">
-						<span v-if="game.round == 1">Add the first note.</span>
-						<span v-else>Add another note.</span>
-					</span>
+                        <span v-else-if="game.step == 'add'">
+                            <span v-if="game.round == 1">Add the first note.</span>
+                            <span v-else>Add another note.</span>
+                        </span>
 
-					<span v-else-if="game.step == 'guess'">Now play it back.</span>
-				</span>
-			</p>
+                        <span v-else-if="game.step == 'guess'">Now play it back.</span>
+                    </span>
+                </p>
 
-			<spinner v-if="!game.winner && game.userTurn != user.username"></spinner>
+                <spinner v-if="!game.winner && game.userTurn != user.username"></spinner>
 
-			<transition name="gameover">
-				<div v-if="game.winner">
-					<h5 v-if="game.winner == challenger.username" class="gameover">GAMEOVER</h5>
-					<h5 v-else class="winner">WINNER</h5>
-					<p>
-						<strong>{{ game.winner }} wins.</strong>
-					</p>
+                <transition name="gameover">
+                    <div v-if="game.winner">
+                        <h5 v-if="game.winner == challenger.username" class="gameover">GAMEOVER</h5>
+                        <h5 v-else class="winner">WINNER</h5>
+                        <p>
+                            <strong>{{ game.winner }} wins.</strong>
+                        </p>
 
-					<button class="btn ai" @click="backToLobby()">Back to lobby</button>
-				</div>
-			</transition>
+                        <!-- <button class="btn ai" @click="backToLobby()">Exit</button> -->
+                    </div>
+                </transition>
 
-			<div class="actions">
-				<button
-					class="btn"
-					v-if="game.userTurn == user.username && game.step == 'listen'"
-					@click="listen()"
-				>Listen</button>
-			</div>
+                <div class="actions">
+                    <button
+                        class="btn"
+                        v-if="game.userTurn == user.username && game.step == 'listen'"
+                        @click="listen()"
+                    >Listen</button>
+                </div>
+            </div>
 
 			<!-- TEMP AI ACTIONS -->
 			<button
@@ -298,13 +300,17 @@ export default {
 
 .game {
 	.game-container {
-		padding: 40px;
+        padding: 60px;
+        position:relative;
 
 		div.timer {
 			position: absolute;
-			left: 30px;
-			top: 30px;
-			color: $color8;
+			left: 60px;
+			top: 60px;
+            background: $color8;
+            color: #fff;
+            border-radius: 50%;
+            padding: 5px 30px;
 			font-weight: 800;
 			font-size: 32px;
 		}
@@ -328,7 +334,13 @@ export default {
 			padding: 0;
 			text-transform: uppercase;
 			color: $primary;
-			margin: 0;
+            margin: 0;
+            
+            &.round {
+                position:absolute;
+                top: 15px;
+                right: 30px;
+            }
 
 			&.gameover {
 				color: $color8;
@@ -373,8 +385,8 @@ export default {
 		button {
 			&.ai {
 				position: absolute;
-				top: 15px;
-				left: 15px;
+				top: 60px;
+				left: 60px;
 			}
 			font-weight: 600;
 			letter-spacing: 1px;
@@ -395,7 +407,7 @@ export default {
 			&.show {
 				visibility: visible;
 			}
-		}
+        }
 
 		h1,
 		h3,

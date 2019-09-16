@@ -37,13 +37,17 @@ export default {
 
 .username-container {
   input {
-    margin-top: 30px;
+    margin-top: 15px;
     padding: 12px;
     font-size: 24px;
     text-align: center;
-    border-radius: 20px;
-    border: 2px solid $primary;
+    border-radius: 50px;
+    border: 1px solid $primary;
     width: 300px;
+
+    &:focus {
+        outline:none;
+    }
   }
 }
 </style>

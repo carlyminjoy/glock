@@ -56,6 +56,7 @@ export default {
 
 <style lang='scss'>
 .leaderboard-container {
+    padding: 60px;
     ol {
         text-align:left;
     }

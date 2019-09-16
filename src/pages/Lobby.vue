@@ -71,7 +71,7 @@ export default {
 @import "./../styles/variables.scss";
 
 .lobby {
-    padding: 40px;
+    padding: 60px;
 }
 
 </style>
