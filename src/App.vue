@@ -1,34 +1,38 @@
 <template>
 
-  <div id="app">
-    <nav v-if='!game || game.winner'>
-        <router-link to="/leaderboard">Leaderboard</router-link>
-        <router-link to="/">Lobby</router-link>
-    </nav>
+    <div id="app">
+        <invitation v-if='invitation'></invitation>
 
-    <router-view></router-view>
+        <nav v-if='!game || game.winner'>
+            <router-link to="/leaderboard">Leaderboard</router-link>
+            <router-link to="/">Lobby</router-link>
+        </nav>
 
-  </div>
+        <router-view></router-view>
+    </div>
 
 </template>
 
 
 <script>
 
+import Invitation from './components/Invitation';
 import { mapState } from 'vuex'
 
 export default {
-	name: "app",
+    name: "app",
+    components: {
+        Invitation
+    },
 	computed: mapState([
-		'game'
+		'game','invitation','username'
 	]),
 	sockets: {
         newGame(game) {
-            let showGame = [game.player1.id, game.player2.id].includes(this.$socket.client.id);
+            let hasBeenChallenged = this.username == game.player2.username;
 
-            if (showGame) {
-				this.$store.commit('setGame', game)
-				this.$router.push('play')
+            if (hasBeenChallenged) {
+				this.$store.commit('setInvitation', game)
             }
         }
     }

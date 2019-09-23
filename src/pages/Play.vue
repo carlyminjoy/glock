@@ -16,11 +16,11 @@ import Game from "./../components/Game.vue";
 import Chat from "./../components/Chat.vue";
 
 export default {
-  name: "Play",
-  components: {
-    Game,
-    Chat
-  }
+    name: "Play",
+    components: {
+        Game,
+        Chat
+    }
 };
 </script>
 

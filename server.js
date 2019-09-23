@@ -18,9 +18,9 @@ const server = app.listen(port, () => {
     console.log('server running on port ' + port);
 });
 
-var gameRoutes = require('./api/Routes')
+var endpoints = require('./api/endpoints')
 
-app.use('/api', gameRoutes)
+app.use('/api', endpoints)
 app.get('/', (req, res) => res.sendFile(__dirname + '/dist/index.html'))
 
 // Web sockets
@@ -37,8 +37,14 @@ io.on('connection', function(socket) {
         io.emit('updateUsers', users)
     })
 
+    socket.on('getUsers', function() {
+        console.log('getUsers called');
+        console.log('users', users);
+        io.emit('onlineUsers', users)
+    })
+
     socket.on('newUser', function(user) {
-        users.push(user);
+        users.push(user)
         io.emit('updateUsers', users)
     })
 
@@ -47,7 +53,7 @@ io.on('connection', function(socket) {
     })
 
     socket.on('move', function(game) {
-        io.emit('newMove', game);
+        io.emit('newMove', game)
     })
 
     socket.on('addMsg', function(msg) {

@@ -1,5 +1,5 @@
 <template>
-	<div class="game">
+	<div class="game" v-if='game'>
 		<div class="game-container">
 			<h1>
 				beat
@@ -51,7 +51,6 @@
                             <strong>{{ game.winner }} wins.</strong>
                         </p>
 
-                        <!-- <button class="btn ai" @click="backToLobby()">Exit</button> -->
                     </div>
                 </transition>
 
@@ -86,14 +85,16 @@ import { default as Key } from "./Key";
 import { default as notes } from "./../config/notes";
 import { default as Spinner } from "./../../node_modules/vue-spinners/src/components/CubeSpinner";
 import { setTimeout } from "timers";
+import axios from 'axios'; 
 
 export default {
 	components: {
 		Key,
-		Spinner
-	},
+        Spinner
+    },
 	data() {
 		return {
+            game: null,
 			guesses: [],
 			notes: notes,
 			challenger: null,
@@ -102,51 +103,53 @@ export default {
 			timer: 0
 		};
 	},
-	computed: mapState(["username", "game"]),
+	computed: mapState(["username"]),
 	sockets: {
-		newMove(game) {
-			this.$store.commit("setGame", game);
-		},
 		updateUsers(users) {
             let vm = this;
+            console.log('users', users);
 			let challengerDisconnected =
-				users.filter(u => u.id == this.challenger.id).length == 0;
+				users.filter(u => u.username == vm.challenger.username).length == 0;
 
-			if (challengerDisconnected) {
-				vm.$store.dispatch('gameover', {
-                    round: vm.game.round,
-                    winner: vm.user.username,
-                    loser: vm.challenger.username,
-                    mode: vm.game.mode
-                });
-			}
+			// if (challengerDisconnected) {
+            //     vm.gameover(vm.user.username);
+			// }
 		}
 	},
 	created() {
-		this.user = {
-			username: this.username,
-			id: this.$socket.client.id
-		};
+        let vm = this;
 
-		if (this.game.mode == "hard") {
-			this.speed = 500;
-		}
+        axios.get(`/api/game/${vm.$route.params.id}`)
+            .catch(e => console.log("couldn't get game: " + e))
+            .then(res => {
+                vm.game = res.data;
+                console.log('retrieved game', res);
 
-		this.user =
-			this.game.player1.id == this.$socket.client.id
-				? this.game.player1
-                : this.game.player2;
-                
-		this.challenger =
-			this.game.player1.id == this.$socket.client.id
-				? this.game.player2
-				: this.game.player1;
+                if (vm.game.mode == "hard") {
+                    vm.speed = 500;
+                }
+
+                let player = vm.$route.params.player;
+                if (player == 1) {
+                    vm.user = vm.game.player1;
+                    vm.challenger = vm.game.player2;
+                } else {
+                    vm.user = vm.game.player2;
+                    vm.challenger = vm.game.player1;
+                }
+            })
 	},
 	methods: {
 		backToLobby() {
-			this.$store.commit("setGame", null);
 			this.$router.push("/");
-		},
+        },
+        updateGame() {
+            let vm = this;
+
+            axios.post('/api/update', vm.game)
+                .then(r => vm.$socket.client.emit("move", r.data))
+                .catch(e => console.log("couldn't update game: " + e));
+        },
 		userPlay(note) {
 			if (this.game.userTurn == this.user.username) {
 				if (this.game.step == "guess") {
@@ -155,69 +158,48 @@ export default {
 					this.userAdd(note);
 				}
 
-				this.$socket.client.emit("move", this.game);
+                this.updateGame();
 			}
 		},
 		userGuess(note) {
             let vm = this;
-			this.guesses.push(note);
-			this.play(note);
+			vm.guesses.push(note);
+			vm.play(note);
 
-			let guessIndex = this.guesses.length - 1;
+			let guessIndex = vm.guesses.length - 1;
 
-			if (this.game.melody.length == this.guesses.length) {
-				this.submitGuess();
-			} else if (this.guesses[guessIndex] != this.game.melody[guessIndex]) {
-				vm.$store.dispatch('gameover', {
-                    round: vm.game.round,
-                    winner: vm.challenger.username,
-                    loser: vm.user.username,
-                    mode: vm.game.mode
-                });
+			if (vm.game.melody.length == vm.guesses.length) {
+                vm.game.step = 'add'
+                vm.guesses = [];
+			} else if (vm.guesses[guessIndex] != vm.game.melody[guessIndex]) {
+                vm.game.winner = vm.challenger.username;
+                vm.updateGame();
 			}
 		},
 		userAdd(note) {
-			this.play(note);
-
-			// End turn, pass to challenger
-			this.$store.dispatch("makeValidMove", note);
-		},
+            this.play(note);
+            this.makeValidMove(note);
+        },
+        switchUser() {
+            this.game.userTurn = this.game.userTurn == this.game.player1.username 
+                ? this.game.player2.username
+                : this.game.player1.username;
+        },
 		aiMove() {
             let vm = this;
-			let randNum = Math.floor(Math.random() * 10);
-
-			if (randNum > (this.game.mode == "hard" ? 9 : 5)) {
-				vm.$store.dispatch('gameover', {
-                    round: vm.game.round,
-                    winner: vm.user.username,
-                    loser: vm.challenger.username,
-                    mode: vm.game.mode
-                });
-			} else {
-				this.$store.dispatch("makeValidMove", this.getRandomNote());
-			}
-		},
-		submitGuess() {
-            let vm = this;
-			let correct = true;
-
-			this.game.melody.forEach((note, i) => {
-				if (note != this.guesses[i]) {
-					correct = false;
-				}
-			});
-
-			correct
-				? this.$store.commit("setStep", "add")
-				: this.$store.dispatch('gameover', {
-                        round: vm.game.round,
-                        winner: vm.challenger.username,
-                        loser: vm.user.username,
-                        mode: vm.game.mode
-                    });
-
-			this.guesses = [];
-		},
+            vm.makeValidMove(this.getRandomNote());
+        },
+        makeValidMove(note) {
+            this.game.melody.push(note);
+            this.game.round++;
+            this.game.step = 'listen';
+            this.switchUser();
+            this.updateGame();
+        },
+        gameover(winner) {
+            this.game.winner = winner;
+            this.updateGame();
+        },
 		play(note) {
 			if (
 				this.game.mode == "easy" ||
@@ -240,10 +222,10 @@ export default {
 		},
 		listen() {
 			this.playMelody(this.speed);
-			this.$store.commit("setStep", null);
+			this.game.step = null;
 
 			setTimeout(() => {
-				this.$store.commit("setStep", "guess");
+				this.game.step = 'guess';
 
 				let timer = parseInt(
 					(5000 + this.speed * this.game.melody.length * 2) / 1000
@@ -259,17 +241,12 @@ export default {
 			let countdown = setInterval(function() {
 				vm.timer = vm.timer - 1;
 
-				if (!vm.game || vm.game.userTurn == vm.challenger.username || vm.game.step == 'add') {
+				if (!(vm.game && vm.game.userTurn == vm.user.username && vm.game.step == 'guess')) {
 					clearInterval(countdown);
 				} else if (vm.timer < 1) {
                     clearInterval(countdown);
-                    
-                    vm.$store.dispatch('gameover', {
-                        round: vm.game.round,
-                        winner: vm.challenger.username,
-                        loser: vm.user.username,
-                        mode: vm.game.mode
-                    });
+
+                    this.gameover(vm.challenger.username);
 				}
 			}, 1000);
 		},

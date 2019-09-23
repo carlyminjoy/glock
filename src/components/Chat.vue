@@ -2,23 +2,22 @@
 	<div class="chat">
 		<h5>
 			Chatting with:
-			<strong>{{ challenger.username }}</strong>
+			<strong>{{ usersString }}</strong>
 		</h5>
 
 		<div class="chat-container">
 			<transition-group name="message">
 				<message
 					v-for="(message, index) in messages"
-					:enemy="message.author.id == challenger.id"
+					:enemy="message.author != username"
 					:message="message"
 					:key="index"
 				></message>
 			</transition-group>
 
 			<div class="input-container">
-				<input class="form-control" v-model="message" @keyup.enter="postMessage(user, message)" />
-				<button class="btn btn-primary" @click.prevent="postMessage(user, message)">SEND</button>
-				<button class="btn btn-primary" @click.prevent="aiResponse()">AI</button>
+				<input class="form-control" v-model="message" @keyup.enter="postMessage(username, message)" />
+				<button class="btn btn-primary" @click.prevent="postMessage(username, message)">SEND</button>
 			</div>
 		</div>
 	</div>
@@ -36,66 +35,61 @@ export default {
 	components: {
 		Message
 	},
-	computed: mapState([
-		'username', 'game'
-	]),
+    computed: {
+        usersString() {
+            if (this.users.length < 1) return null;
+            return this.users.map(u => u.username).join(', ');
+        },
+        ...mapState(
+            ['username']
+        )
+    },
 	data() {
 		return {
 			messages: [],
 			message: "",
-		challenger: null,
-		user: null
+            users: []
 		};
 	},
 	methods: {
 		postMessage(author, message) {
-			this.$socket.client.emit('addMsg', {
+            let vm = this;
+
+			vm.$socket.client.emit('addMsg', {
 				author: author,
 				message: message,
 				datetime: new Date()
 			});
 
-			this.message = "";
-		},
-		async aiResponse() {
-			let message = await this.getInsult();
-			this.postMessage(this.challenger, message);
-		},
-		getInsult() {
-			return new Promise((resolve, reject) => {
-				axios
-					.get(
-						"https://lakerolmaker-insult-generator-v1.p.rapidapi.com/?mode=random",
-						{
-							headers: {
-								"x-rapidapi-host":
-									"lakerolmaker-insult-generator-v1.p.rapidapi.com",
-								"x-rapidapi-key":
-									"b82a516a4bmshd9e853bb88fc02bp1f25a5jsn6a067c1ea61d"
-							}
-						}
-					)
-					.then(res => resolve(res.data))
-					.catch(e => reject(e));
-			});
+			vm.message = "";
 		}
 	},
 	sockets: {
+        onlineUsers(users) {
+            let vm = this;
+            vm.users = users;
+        },
 		newMsg(msg) {
 			this.messages.push(msg)
 		},
 		updateUsers(users) {
-			let challengerDisconnected = users.filter(u => u.id == this.challenger.id).length == 0;
+            console.log('users',users);
+            let vm = this;
+			let newUsers = users.filter(u => !vm.users.includes(u))
+            let disconnectedUsers = vm.users.filter(u => !users.includes(u))
 
-			if (challengerDisconnected) {
-				this.postMessage(this.challenger, '[disconnected]')
-			}
+			newUsers.forEach(u => {
+				this.postMessage(u, `[${u.username} connected]`)
+            })
+            
+            disconnectedUsers.forEach(u => {
+				this.postMessage(u, `[${u.username} disconnected]`)
+			})
 		}
-	},
-	created() {
-		this.user = this.game.player1.id == this.$socket.client.id ? this.game.player1 : this.game.player2;
-		this.challenger = this.game.player1.id == this.$socket.client.id ? this.game.player2 : this.game.player1;
-	}
+    },
+    mounted() {
+        this.$socket.client.emit("getUsers");
+    }
 };
 </script>
 

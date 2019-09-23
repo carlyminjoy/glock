@@ -1,13 +1,35 @@
 var mongoose = require('mongoose')
 
 var game = new mongoose.Schema({
+        player1: {
+            username: {
+                type: String
+            },
+            id: {
+                type: String
+            }
+        },
+        player2: {
+            username: {
+                type: String
+            },
+            id: {
+                type: String
+            }
+        },
         round: {
             type: Number
         },
-        winner: {
+        userTurn: {
             type: String
         },
-        loser: {
+        melody: {
+            type: Array
+        },
+        step: {
+            type: String
+        },
+        winner: {
             type: String
         },
         mode: {

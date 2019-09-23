@@ -19,6 +19,7 @@
 
 import { mapState } from 'vuex'
 import Challenger from './Challenger.vue'
+import axios from 'axios';
 
 export default {
 	name: "Challengers",
@@ -35,22 +36,20 @@ export default {
 	]),
 	methods: {
 		challenge(challenger, mode) {
+            axios.post('/api/new', {
+                player1: {
+                    username: this.username,
+                    id: this.$socket.client.id
+                },
+                player2: challenger,
+                mode: mode
+            })
+            .then(res => {
+                console.log("RESPONSE", res)
+                this.$router.push(`/play/${res.data._id}/1`)
+                this.$socket.client.emit('startGame', res.data);
+            })
 
-			let game = {
-				player1: {
-					username: this.username,
-					id: this.$socket.client.id
-				},
-				player2: challenger,
-				round: 1,
-				userTurn: this.username,
-				winner: null,
-				melody: [],
-				step: "add", // add, listen, guess
-				mode: mode
-			};
-
-			this.$socket.client.emit('startGame', game);
 		}
 	}
 };

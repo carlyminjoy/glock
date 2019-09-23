@@ -7,7 +7,6 @@ import App from "./App.vue";
 import Lobby from "./pages/Lobby.vue";
 import Play from "./pages/Play.vue";
 import Leaderboard from "./pages/Leaderboard.vue";
-import axios from 'axios';
 
 const socket = io("https://beat-tha-glock.herokuapp.com");
 
@@ -22,7 +21,7 @@ const routes = [
     component: Lobby
   },
   {
-    path: "/play",
+    path: "/play/:id/:player",
     component: Play
   },
   {
@@ -34,57 +33,18 @@ const routes = [
 const router = new VueRouter({ routes });
 
 const store = new Vuex.Store({
-  state: {
-    username: null,
-    game: null
-  },
-  mutations: {
-    setUsername(state, username) {
-      state.username = username;
+    state: {
+        username: null,
+        invitation: null
     },
-    setGame(state, game) {
-      state.game = game;
-    },
-    setWinner(state, winner) {
-      state.game.winner = winner;
-    },
-    setStep(state, step) {
-      state.game.step = step;
-    },
-    addRound(state) {
-      state.game.round++;
-    },
-    addMelodyNote(state, note) {
-      state.game.melody.push(note);
-    },
-    switchUser(state) {
-      let currentUser = state.game.userTurn;
-      state.game.userTurn =
-        currentUser == state.game.player1.username
-          ? state.game.player2.username
-          : state.game.player1.username;
+    mutations: {
+        setUsername(state, username) {
+            state.username = username;
+        },
+        setInvitation(state, invitation) {
+            state.invitation = invitation
+        }
     }
-  },
-  getters: {
-    game: state => {
-      return state.game;
-    },
-    username: state => {
-      return state.username;
-    }
-  },
-  actions: {
-    makeValidMove(context, note) {
-      context.commit("addMelodyNote", note);
-      context.commit("switchUser");
-      context.commit("addRound");
-      context.commit("setStep", "listen");
-    },
-    gameover(context, data) {
-        context.commit('setWinner', data.winner);
-        axios.post('/api/add', data);
-    }
-  }
 });
 
 new Vue({

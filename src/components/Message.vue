@@ -1,8 +1,8 @@
 <template>
-  <div class="message" :class="{'enemy' : enemy, 'user' : !enemy }">
-    <span class="date">{{ message.datetime | moment('H:mm A') }}</span>
-    <p>{{ message.message }}</p>
-  </div>
+    <div class="message" :class="{'enemy' : enemy, 'user' : !enemy }">
+        <span class="date">{{ message.author.username }} - {{ message.datetime | moment('H:mm A') }}</span>
+        <p>{{ message.message }}</p>
+    </div>
 </template>
 
 <script>

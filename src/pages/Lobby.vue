@@ -1,22 +1,15 @@
 <template>
-
     <div class="lobby">
 
         <transition name="fade">
-
             <challengers v-if='username' :users='availableUsers' />
-
         </transition>
 
         <transition name="fade">
-
             <login v-if='!username' />
-
         </transition>
 
-
     </div>
-
 </template>
 
 
