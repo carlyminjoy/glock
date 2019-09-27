@@ -60,7 +60,7 @@ body {
         padding: 0;
 
         .page {
-            padding-top: 30px;
+            padding-top: 90px;
         }
         
         nav {

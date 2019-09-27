@@ -1,5 +1,5 @@
 <template>
-    <div class="leaderboard-container">
+    <div class="leaderboard-container page">
         <h1>Leaderboard</h1>
 
         <ol>
