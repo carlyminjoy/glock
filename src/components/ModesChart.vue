@@ -99,7 +99,7 @@ export default {
     justify-content:center;
 
     .guide {
-        padding: 30px;
+        padding: 10px;
         display:flex;
         flex-direction:column;
 
@@ -107,7 +107,7 @@ export default {
             padding: 5px 10px;
             font-weight: bold;
             color: #fff;
-            margin: 10px;
+            margin: 5px 0;
 
             &:first-child {
                 background: #2d3e50;

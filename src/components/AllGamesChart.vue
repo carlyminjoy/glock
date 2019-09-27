@@ -10,6 +10,7 @@
 <script>
 
 var d3 = require('d3');
+var moment = require('moment');
 
 export default {
     name: 'AllGamesChart',
@@ -26,24 +27,42 @@ export default {
             .append("g")
                 .attr("transform", `translate(${margin.left},${margin.right})`);
 
-        let data = [
-            {
-                date: d3.timeParse("%Y-%m-%d")('2019-09-09'),
-                value: 4
-            },
-            {
-                date: d3.timeParse("%Y-%m-%d")('2019-09-15'),
-                value: 8
-            },
-            {
-                date: d3.timeParse("%Y-%m-%d")('2019-09-19'),
-                value: 5
-            },
-            {
-                date: d3.timeParse("%Y-%m-%d")('2019-09-26'),
-                value: 3
+        let formattedGameData = this.gamedata.map(gd => {
+            gd.date = gd.date.slice(0,10)
+            return gd;
+        });
+
+        let data = d3.nest()
+            .key(d => d.date)
+            .entries(formattedGameData);
+
+        data = data.map(d => {
+            return {
+                date: d3.timeParse("%Y-%m-%d")(d.key),
+                value: d.values.length
             }
-        ]
+        })
+
+        console.log('data', data);
+
+        // let data = [
+        //     {
+        //         date: d3.timeParse("%Y-%m-%d")('2019-09-09'),
+        //         value: 4
+        //     },
+        //     {
+        //         date: d3.timeParse("%Y-%m-%d")('2019-09-15'),
+        //         value: 8
+        //     },
+        //     {
+        //         date: d3.timeParse("%Y-%m-%d")('2019-09-19'),
+        //         value: 5
+        //     },
+        //     {
+        //         date: d3.timeParse("%Y-%m-%d")('2019-09-26'),
+        //         value: 3
+        //     }
+        // ]
 
         var x = d3.scaleTime()
             .domain(d3.extent(data, function(d) { return d.date; }))
@@ -61,8 +80,8 @@ export default {
         svg.append("path")
             .datum(data)
             .attr("fill", "none")
-            .attr("stroke", "steelblue")
-            .attr("stroke-width", 1.5)
+            .attr("stroke", "#2d3e50")
+            .attr("stroke-width", 2)
             .attr("d", d3.line()
                 .x(function(d) { return x(d.date) })
                 .y(function(d) { return y(d.value) })

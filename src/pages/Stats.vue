@@ -4,17 +4,17 @@
         <h2>Game Statistics</h2>
         <div class='charts'>
             <div class='chart-container'>
-                <h3>Modes</h3>
+                <h3>Games by difficulty</h3>
                 <modes-chart v-if='loadData' :gamedata=loadData />
             </div>
 
             <div class='chart-container'>
-                <h3>Recent Games</h3>
+                <h3>Recent games</h3>
                 <all-games-chart v-if='loadData' :gamedata=loadData />
             </div>
 
             <div class='chart-container'>
-                <h3>Active Games</h3>
+                <h3>Active games</h3>
                 <active-games-chart v-if='loadData' :gamedata=loadData />
             </div>
         </div>

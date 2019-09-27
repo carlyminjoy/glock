@@ -1,6 +1,6 @@
 <template>
 	<div class="invitation">
-		You have been challenged by {{ invitation.player1.username }}!
+		<p>You have been challenged by {{ invitation.player1.username }}!</p>
 		<button @click='accept()'>Accept</button>
 	</div>
 </template>
@@ -29,8 +29,8 @@ export default {
 
 .invitation {
 	position:absolute;
-	top: calc(50vh - 50px);
-	left: calc(50vw - 100px);
+	top: calc(50vh - 100px);
+	left: calc(50vw - 150px);
 	height: 200px;
 	width: 300px;
 	display:block;
@@ -41,5 +41,10 @@ export default {
     justify-content:center;
     align-items:center;
     flex-direction:column;
+    @extend %boxshadow;
+
+    p {
+        margin-bottom: 30px;
+    }
 }
 </style>

@@ -63,6 +63,8 @@ body {
             position:fixed;
             padding: 15px;
             z-index:99;
+            background:white;
+            @extend %boxshadow;
 
             a {
                 padding: 15px;

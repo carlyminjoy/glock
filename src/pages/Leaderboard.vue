@@ -29,13 +29,15 @@ export default {
             if (!this.results) return [];
             let unique = [];
             this.results.forEach(r => {
+                console.log('result', r);
+                let complete = r.winner;
                 let exists = unique.find(u => {
                     return u.winner == r.winner
                     && u.loser == r.loser
                     && u.mode == r.mode
                     && u.round == r.round
                 })
-                if (!exists) unique.push(r)
+                if (!exists && complete) unique.push(r)
             })
             return unique.sort(this.compare);
         }
