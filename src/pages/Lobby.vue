@@ -1,5 +1,5 @@
 <template>
-    <div class="lobby">
+    <div class="lobby page">
 
         <transition name="fade">
             <challengers v-if='username' :users='availableUsers' />

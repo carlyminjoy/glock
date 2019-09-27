@@ -1,6 +1,6 @@
 <template>
 
-    <div id="stats">
+    <div id="stats" class='page'>
         <h2>Game Statistics</h2>
         <div class='charts'>
             <div class='chart-container'>

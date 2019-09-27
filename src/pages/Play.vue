@@ -1,5 +1,5 @@
 <template>
-  <div class="play-container">
+  <div class="play-container page">
     <transition name="fade">
         <game @gameover="game = null" />
     </transition>

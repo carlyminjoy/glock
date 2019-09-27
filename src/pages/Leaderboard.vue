@@ -72,6 +72,8 @@ export default {
 .leaderboard-container {
     padding: 60px;
     ol {
+        width: 360px;
+        margin: 30px auto;
         text-align:left;
     }
 }
