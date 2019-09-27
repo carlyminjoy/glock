@@ -4,6 +4,7 @@
         <invitation v-if='invitation'></invitation>
 
         <nav v-if='!game || game.winner'>
+            <router-link to="/stats">Stats</router-link>
             <router-link to="/leaderboard">Leaderboard</router-link>
             <router-link to="/">Lobby</router-link>
         </nav>
@@ -47,7 +48,7 @@ export default {
 body {
     margin: 0;
     padding: 0;
-    overflow-y:hidden;
+    /* overflow-y:hidden; */
 	
 	#app {
 		font-family: "Avenir", Helvetica, Arial, sans-serif;

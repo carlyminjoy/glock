@@ -34,6 +34,9 @@ var game = new mongoose.Schema({
         },
         mode: {
             type: String
+        },
+        date: {
+            type: Date
         }
     },
     {

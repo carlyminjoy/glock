@@ -22,7 +22,8 @@ endpoints.route('/new').post(function (req, res) {
         winner: null,
         melody: [],
         step: "add",
-        mode: req.body.mode
+        mode: req.body.mode,
+        date: new Date()
     },
       function (error, game) {
         if (error) {
@@ -42,7 +43,7 @@ endpoints.route('/update').post(function (req, res) {
         }
 
         game.round = req.body.round;
-        game.userTurn = req.body.player1.username;
+        game.userTurn = req.body.userTurn;
         game.winner = req.body.winner;
         game.melody = req.body.melody;
         game.step = req.body.step;

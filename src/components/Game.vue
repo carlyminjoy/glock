@@ -8,7 +8,7 @@
 				<strong>glock</strong>
 			</h1>
 
-			<h5 class='round'>Round {{ game.round }}</h5>
+			<h5 class='round'>Round {{ game.round }}<br>{{ user.username }}</h5>
 
 			<div v-if="game.step =='guess' && !game.winner" class="timer">{{ timer }}</div>
 
@@ -107,13 +107,12 @@ export default {
 	sockets: {
 		updateUsers(users) {
             let vm = this;
-            console.log('users', users);
 			let challengerDisconnected =
 				users.filter(u => u.username == vm.challenger.username).length == 0;
-
-			// if (challengerDisconnected) {
-            //     vm.gameover(vm.user.username);
-			// }
+        },
+        newMove(game) {
+            let vm = this;
+			vm.game = game;
 		}
 	},
 	created() {
@@ -123,7 +122,6 @@ export default {
             .catch(e => console.log("couldn't get game: " + e))
             .then(res => {
                 vm.game = res.data;
-                console.log('retrieved game', res);
 
                 if (vm.game.mode == "hard") {
                     vm.speed = 500;
@@ -150,8 +148,9 @@ export default {
         updateGame() {
             let vm = this;
 
+            vm.$socket.client.emit('move', vm.game);
+
             axios.post('/api/update', vm.game)
-                .then(r => vm.$socket.client.emit("move", r.data))
                 .catch(e => console.log("couldn't update game: " + e));
         },
 		userPlay(note) {
@@ -161,8 +160,6 @@ export default {
 				} else if (this.game.step == "add") {
 					this.userAdd(note);
 				}
-
-                this.updateGame();
 			}
 		},
 		userGuess(note) {
@@ -185,9 +182,9 @@ export default {
             this.makeValidMove(note);
         },
         switchUser() {
-            this.game.userTurn = this.game.userTurn == this.game.player1.username 
-                ? this.game.player2.username
-                : this.game.player1.username;
+            this.game.userTurn = this.game.userTurn == this.user.username 
+                ? this.challenger.username
+                : this.user.username;
         },
 		aiMove() {
             let vm = this;

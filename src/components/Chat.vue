@@ -41,7 +41,7 @@ export default {
             return this.users.map(u => u.username).join(', ');
         },
         username() {
-            this.$store.getters.username
+            return this.$store.getters.username
         }
     },
 	data() {
@@ -56,7 +56,7 @@ export default {
             let vm = this;
 
 			vm.$socket.client.emit('addMsg', {
-				author: author,
+				author: (author && author != undefined) ? author : vm.username,
 				message: message,
 				datetime: new Date()
 			});
@@ -67,20 +67,19 @@ export default {
 	sockets: {
         onlineUsers(users) {
             let vm = this;
+            console.log('onlineUsers event', users);
+
             vm.users = users;
         },
 		newMsg(msg) {
+            console.log('newMsg event', msg);
 			this.messages.push(msg)
 		},
 		updateUsers(users) {
-            console.log('users',users);
+            console.log('updateUsers event',users);
             let vm = this;
 			let newUsers = users.filter(u => !vm.users.includes(u))
             let disconnectedUsers = vm.users.filter(u => !users.includes(u))
-
-			// newUsers.forEach(u => {
-			// 	this.postMessage(u, `[${u.username} connected]`)
-            // })
             
             disconnectedUsers.forEach(u => {
 				this.postMessage(u.username, `[${u.username} disconnected]`)

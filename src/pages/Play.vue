@@ -1,11 +1,11 @@
 <template>
   <div class="play-container">
     <transition name="fade">
-      <game @gameover="game = null" />
+        <game @gameover="game = null" />
     </transition>
 
     <transition name="fade">
-      <chat />
+        <chat />
     </transition>
   </div>
 </template>
@@ -23,7 +23,6 @@ export default {
     }
 };
 </script>
-
 
 <style lang='scss'>
 .play-container {

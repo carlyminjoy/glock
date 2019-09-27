@@ -1,6 +1,6 @@
 <template>
     <div class="message" :class="{'enemy' : enemy, 'user' : !enemy }">
-        <span class="date">{{ message.author }} - {{ message.datetime | moment('H:mm A') }}</span>
+        <span class="date">{{ message.author.toUpperCase() }} - {{ message.datetime | moment('H:mm A') }}</span>
         <p>{{ message.message }}</p>
     </div>
 </template>

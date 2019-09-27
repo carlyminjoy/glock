@@ -4,7 +4,9 @@
 
         <ol>
             <li v-for='result in orderedResults' :key='result._id'>
-                <strong>{{ result.winner }}</strong> beat {{ result.loser }} - {{ result.round }} rounds
+                <strong>{{ result.winner }}</strong> 
+                beat {{ result.player1.username == result.winner ? result.player2.username : result.player1.username }} 
+                - {{ result.round }} rounds
             </li>
         </ol>
     </div>
