@@ -6,6 +6,7 @@ import io from "socket.io-client";
 import App from "./App.vue";
 import Lobby from "./pages/Lobby.vue";
 import Play from "./pages/Play.vue";
+import Stats from "./pages/Stats.vue";
 import Leaderboard from "./pages/Leaderboard.vue";
 import axios from 'axios';
 
@@ -24,6 +25,10 @@ const routes = [
   {
     path: "/play",
     component: Play
+  },
+  {
+    path: "/stats",
+    component: Stats
   },
   {
     path: "/leaderboard",
