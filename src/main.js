@@ -44,6 +44,9 @@ const store = new Vuex.Store({
         setInvitation(state, invitation) {
             state.invitation = invitation
         }
+    },
+    getters: {
+        username: state => state.username
     }
 });
 

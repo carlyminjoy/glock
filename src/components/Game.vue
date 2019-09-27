@@ -137,6 +137,10 @@ export default {
                     vm.user = vm.game.player2;
                     vm.challenger = vm.game.player1;
                 }
+
+                if (!vm.$store.getters.username) {
+                    vm.$store.commit('setUsername', vm.user.username)
+                }
             })
 	},
 	methods: {

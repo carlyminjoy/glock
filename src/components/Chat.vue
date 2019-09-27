@@ -40,9 +40,9 @@ export default {
             if (this.users.length < 1) return null;
             return this.users.map(u => u.username).join(', ');
         },
-        ...mapState(
-            ['username']
-        )
+        username() {
+            this.$store.getters.username
+        }
     },
 	data() {
 		return {
@@ -78,12 +78,12 @@ export default {
 			let newUsers = users.filter(u => !vm.users.includes(u))
             let disconnectedUsers = vm.users.filter(u => !users.includes(u))
 
-			newUsers.forEach(u => {
-				this.postMessage(u, `[${u.username} connected]`)
-            })
+			// newUsers.forEach(u => {
+			// 	this.postMessage(u, `[${u.username} connected]`)
+            // })
             
             disconnectedUsers.forEach(u => {
-				this.postMessage(u, `[${u.username} disconnected]`)
+				this.postMessage(u.username, `[${u.username} disconnected]`)
 			})
 		}
     },
