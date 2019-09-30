@@ -29,7 +29,6 @@ export default {
             if (!this.results) return [];
             let unique = [];
             this.results.forEach(r => {
-                console.log('result', r);
                 let complete = r.winner;
                 let exists = unique.find(u => {
                     return u.winner == r.winner

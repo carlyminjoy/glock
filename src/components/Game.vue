@@ -1,5 +1,5 @@
 <template>
-	<div class="game page" v-if='game'>
+	<div class="game" v-if='game'>
 		<div class="game-container">
 			<h1>
 				beat
@@ -278,7 +278,7 @@ export default {
 
 .game {
 	.game-container {
-        padding: 60px;
+        padding: 30px;
         position:relative;
 
 		div.timer {
