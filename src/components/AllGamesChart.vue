@@ -32,53 +32,32 @@ export default {
             return gd;
         });
 
-        let data = d3.nest()
+        let nestedData = d3.nest()
             .key(d => d.date)
             .entries(formattedGameData);
 
-        data = data.map(d => {
+        nestedData = nestedData.map(d => {
             return {
                 date: d3.timeParse("%Y-%m-%d")(d.key),
                 value: d.values.length
             }
         })
 
-        console.log('data', data);
-
-        // let data = [
-        //     {
-        //         date: d3.timeParse("%Y-%m-%d")('2019-09-09'),
-        //         value: 4
-        //     },
-        //     {
-        //         date: d3.timeParse("%Y-%m-%d")('2019-09-15'),
-        //         value: 8
-        //     },
-        //     {
-        //         date: d3.timeParse("%Y-%m-%d")('2019-09-19'),
-        //         value: 5
-        //     },
-        //     {
-        //         date: d3.timeParse("%Y-%m-%d")('2019-09-26'),
-        //         value: 3
-        //     }
-        // ]
-
         var x = d3.scaleTime()
-            .domain(d3.extent(data, function(d) { return d.date; }))
+            .domain(d3.extent(nestedData, function(d) { return d.date; }))
             .range([ 0, width ]);
             svg.append("g")
             .attr("transform", "translate(0," + height + ")")
             .call(d3.axisBottom(x));
 
         var y = d3.scaleLinear()
-            .domain([0, d3.max(data, function(d) { return +d.value; })])
+            .domain([0, d3.max(nestedData, function(d) { return +d.value; })])
             .range([ height, 0 ]);
             svg.append("g")
             .call(d3.axisLeft(y));
 
         svg.append("path")
-            .datum(data)
+            .datum(nestedData)
             .attr("fill", "none")
             .attr("stroke", "#2d3e50")
             .attr("stroke-width", 2)
