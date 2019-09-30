@@ -45,7 +45,6 @@ export default {
                 mode: mode
             })
             .then(res => {
-                console.log("RESPONSE", res)
                 this.$router.push(`/play/${res.data._id}/1`)
                 this.$socket.client.emit('startGame', res.data);
             })

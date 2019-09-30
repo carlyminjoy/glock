@@ -29,7 +29,6 @@ const io = require('socket.io')(server);
 let users = [];
 
 io.on('connection', function(socket) {
-    console.log(socket.id)
 
     socket.on('disconnect', function() {
         users = users.filter(u => u.id != socket.id)
@@ -38,8 +37,6 @@ io.on('connection', function(socket) {
     })
 
     socket.on('getUsers', function() {
-        console.log('getUsers called');
-        console.log('users', users);
         io.emit('onlineUsers', users)
     })
 

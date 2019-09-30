@@ -67,16 +67,12 @@ export default {
 	sockets: {
         onlineUsers(users) {
             let vm = this;
-            console.log('onlineUsers event', users);
-
             vm.users = users;
         },
 		newMsg(msg) {
-            console.log('newMsg event', msg);
 			this.messages.push(msg)
 		},
 		updateUsers(users) {
-            console.log('updateUsers event',users);
             let vm = this;
 			let newUsers = users.filter(u => !vm.users.includes(u))
             let disconnectedUsers = vm.users.filter(u => !users.includes(u))
