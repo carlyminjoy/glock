@@ -1,5 +1,5 @@
 <template>
-	<div class="game" v-if='game'>
+	<div class="game page" v-if='game'>
 		<div class="game-container">
 			<h1>
 				beat
