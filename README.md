@@ -50,6 +50,10 @@ Endpoints push and receive data from MongoDB using Mongoose as an ORM with a gam
 
 ### Client-Server communication
 
+Games are created and updated using endpoints, new game moves also utilises sockets, and chat only uses sockets.
+
+For example, once both players are on the game screen, when a player makes a move, a new socket is emitted with the game object passed as a parameter, which is then passed from server sockets back down for player 2 to receive immediately. 
+
 Endpoints (`endpoints.js`): 
 
 - POST `/new`

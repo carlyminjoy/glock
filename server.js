@@ -45,10 +45,6 @@ io.on('connection', function(socket) {
         io.emit('updateUsers', users)
     })
 
-    socket.on('startGame', function(game) {
-        io.emit('newGame', game);
-    })
-
     socket.on('move', function(game) {
         io.emit('newMove', game)
     })
