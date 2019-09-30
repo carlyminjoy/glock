@@ -278,7 +278,7 @@ export default {
 
 .game {
 	.game-container {
-        padding: 30px;
+        padding: 70px 30px 30px 30px;
         position:relative;
 
 		div.timer {
