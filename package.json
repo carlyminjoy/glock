@@ -8,13 +8,14 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@vue/cli": "^4.5.11",
     "axios": "^0.19.0",
     "core-js": "^2.6.5",
+    "postcss-unique-selectors": "^4.0.1",
     "sass": "^1.22.9",
     "sass-loader": "^7.1.0",
     "socket.io-client": "^2.2.0",
     "vue": "^2.6.10",
-    "vue-meta": "^2.4.0",
     "vue-moment": "^4.0.0",
     "vue-socket.io": "^3.0.7",
     "vue-socket.io-extended": "^4.0.0",
@@ -30,7 +31,7 @@
     "eslint-plugin-prettier": "^3.1.0",
     "eslint-plugin-vue": "^5.0.0",
     "prettier": "^1.18.2",
-    "vue-template-compiler": "^2.6.10"
+    "vue-template-compiler": "^2.6.12"
   },
   "eslintConfig": {
     "root": true,
