@@ -31,6 +31,9 @@ export default {
     Chat,
     Waiting
   },
+  metaInfo: {
+    title: "Beat tha glock"
+  },
   data() {
     return {
       game: null,
