@@ -1,6 +1,6 @@
 <template>
-  <div class="message" :class="{'enemy' : enemy, 'user' : !enemy }">
-    <span class="date">{{ message.datetime | moment('H:mm A') }}</span>
+  <div class="message" :class="{ enemy: enemy, user: !enemy }">
+    <span class="date">{{ message.datetime | moment("H:mm A") }}</span>
     <p>{{ message.message }}</p>
   </div>
 </template>
@@ -22,7 +22,7 @@ export default {
 };
 </script>
 
-<style lang='scss'>
+<style lang="scss">
 @import "./../styles/variables.scss";
 
 .message {
@@ -31,7 +31,7 @@ export default {
   padding: 5px 15px 10px 15px;
   margin: 10px 0;
   @extend %boxshadow;
-  width:fit-content;
+  width: fit-content;
 
   &.user {
     border-radius: 10px 10px 0 10px;
@@ -44,7 +44,7 @@ export default {
     margin-left: 0;
     margin-right: 30px;
     border-radius: 10px 10px 10px 0;
-    align-self:left;
+    align-self: left;
     background: #eee;
     // background: linear-gradient(180deg, #0197fc 0%, $color5 40%);
     // color: #eee;
@@ -56,15 +56,14 @@ export default {
 
   p {
     margin: 0;
-    word-break:break-all;
-    line-height:18px;
+    word-break: break-all;
+    line-height: 18px;
   }
 
-    span.date {
-        font-size: 8px;
-        letter-spacing: 1px;
-        font-weight: 600;
-
+  span.date {
+    font-size: 8px;
+    letter-spacing: 1px;
+    font-weight: 600;
   }
 }
 </style>

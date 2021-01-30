@@ -46,7 +46,7 @@ export default {
 };
 </script>
 
-<style scoped lang='scss'>
+<style scoped lang="scss">
 .key {
   /* width: 90px; */
   transition: 0.2s ease-in-out;

@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@vue/cli": "^4.5.11",
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "core-js": "^2.6.5",
     "postcss-unique-selectors": "^4.0.1",
     "sass": "^1.22.9",
@@ -24,7 +24,7 @@
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.10.0",
     "@vue/cli-plugin-eslint": "^3.10.0",
-    "@vue/cli-service": "^3.10.0",
+    "@vue/cli-service": "^4.5.11",
     "@vue/eslint-config-prettier": "^5.0.0",
     "babel-eslint": "^10.0.1",
     "eslint": "^5.16.0",

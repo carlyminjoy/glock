@@ -11,7 +11,8 @@
     <transition name="fade2">
       <div class="challenger-container" v-if="username">
         <h3>
-          <strong>{{ username }}</strong>, who do you want to challenge?
+          <strong>{{ username }}</strong
+          >, who do you want to challenge?
         </h3>
 
         <ul>
@@ -19,8 +20,12 @@
             <div class="name">{{ user.username }}</div>
 
             <div class="modes">
-              <button class="btn btn-success" @click="challenge(user)">Easy</button>
-              <button class="btn btn-danger" @click="challenge(user, 'hard')">Hard</button>
+              <button class="btn btn-success" @click="challenge(user)">
+                Easy
+              </button>
+              <button class="btn btn-danger" @click="challenge(user, 'hard')">
+                Hard
+              </button>
             </div>
           </li>
         </ul>
@@ -32,7 +37,7 @@
 <script>
 export default {
   name: "Waiting",
-  props: ['existingUsername'],
+  props: ["existingUsername"],
   data() {
     return {
       onlineUsers: [],
@@ -41,18 +46,20 @@ export default {
   },
   mounted() {
     if (this.existingUsername) {
-      this.username = this.existingUsername
+      this.username = this.existingUsername;
     }
   },
   computed: {
-      availableUsers() {
-          return this.onlineUsers.filter(u => u.id != this.$socket.client.id)
-      },
-      username() {
-        let username = this.existingUsername ? this.existingUsername : this.newUsername;
+    availableUsers() {
+      return this.onlineUsers.filter(u => u.id != this.$socket.client.id);
+    },
+    username() {
+      let username = this.existingUsername
+        ? this.existingUsername
+        : this.newUsername;
 
-        return username
-      }
+      return username;
+    }
   },
   sockets: {
     updateUsers(users) {
@@ -70,7 +77,7 @@ export default {
           username: "Glocktavia"
         },
         ...users
-      ]
+      ];
     }
   },
   methods: {
@@ -89,25 +96,24 @@ export default {
         mode: mode
       };
 
-      this.$socket.client.emit('startGame', game);
-
+      this.$socket.client.emit("startGame", game);
     },
     addUsername(e) {
       e.preventDefault();
 
       let user = {
-          id: this.$socket.client.id,
-          username: e.target.value
-      }
+        id: this.$socket.client.id,
+        username: e.target.value
+      };
 
-      this.$socket.client.emit('newUser', user)
+      this.$socket.client.emit("newUser", user);
       this.newUsername = e.target.value;
     }
   }
 };
 </script>
 
-<style lang='scss'>
+<style lang="scss">
 @import "./../styles/variables.scss";
 
 .waiting-container {

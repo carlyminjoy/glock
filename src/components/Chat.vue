@@ -16,9 +16,20 @@
       </transition-group>
 
       <div class="input-container">
-        <input class="form-control" v-model="message" @keyup.enter="postMessage(user, message)" />
-        <button class="btn btn-primary" @click.prevent="postMessage(user, message)">SEND</button>
-        <button class="btn btn-primary" @click.prevent="aiResponse()">AI</button>
+        <input
+          class="form-control"
+          v-model="message"
+          @keyup.enter="postMessage(user, message)"
+        />
+        <button
+          class="btn btn-primary"
+          @click.prevent="postMessage(user, message)"
+        >
+          SEND
+        </button>
+        <button class="btn btn-primary" @click.prevent="aiResponse()">
+          AI
+        </button>
       </div>
     </div>
   </div>
@@ -42,19 +53,19 @@ export default {
     return {
       messages: [],
       message: "",
-	  challenger: null,
-	  user: null
+      challenger: null,
+      user: null
     };
   },
   methods: {
     postMessage(author, message) {
-		this.$socket.client.emit('addMsg', {
-        	author: author,
-        	message: message,
-        	datetime: new Date()
-      	});
+      this.$socket.client.emit("addMsg", {
+        author: author,
+        message: message,
+        datetime: new Date()
+      });
 
-      	this.message = "";
+      this.message = "";
     },
     async aiResponse() {
       let message = await this.getInsult();
@@ -81,24 +92,31 @@ export default {
   },
   sockets: {
     newMsg(msg) {
-	    this.messages.push(msg)
+      this.messages.push(msg);
     },
     updateUsers(users) {
-      let challengerDisconnected = users.filter(u => u.id == this.challenger.id).length == 0;
+      let challengerDisconnected =
+        users.filter(u => u.id == this.challenger.id).length == 0;
 
-			if (challengerDisconnected) {
-				this.postMessage(this.challenger, '[disconnected]')
-			}
-		}
+      if (challengerDisconnected) {
+        this.postMessage(this.challenger, "[disconnected]");
+      }
+    }
   },
   created() {
-    this.user = this.game.player1.id == this.$socket.client.id ? this.game.player1 : this.game.player2;
-	this.challenger = this.game.player1.id == this.$socket.client.id ? this.game.player2 : this.game.player1;
+    this.user =
+      this.game.player1.id == this.$socket.client.id
+        ? this.game.player1
+        : this.game.player2;
+    this.challenger =
+      this.game.player1.id == this.$socket.client.id
+        ? this.game.player2
+        : this.game.player1;
   }
 };
 </script>
 
-<style lang='scss'>
+<style lang="scss">
 @import "./../styles/variables.scss";
 
 .chat {
@@ -153,12 +171,12 @@ export default {
 .message-enter-active,
 .message-leave-active {
   transition: all 0.3s ease;
-  max-height:300px;
+  max-height: 300px;
 }
 
 .message-enter,
 .message-leave-to {
   opacity: 0;
-  max-height:0;
+  max-height: 0;
 }
 </style>

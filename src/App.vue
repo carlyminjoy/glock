@@ -1,22 +1,16 @@
 <template>
-
   <div id="app">
     <div v-show="!game" class="waiting-container">
-
-      <waiting :existing-username='username'/>
-
+      <waiting :existing-username="username" />
     </div>
 
     <transition name="fade">
       <div v-if="game" class="game-chat-container">
-
-        <game @gameover='game = null' :game="game" :username="username" />
+        <game @gameover="game = null" :game="game" :username="username" />
         <chat :game="game" :username="username" />
-
       </div>
     </transition>
   </div>
-
 </template>
 
 <script>
@@ -31,7 +25,7 @@ export default {
     Chat,
     Waiting
   },
-  title: 'Beat the glock',
+  title: "Beat the glock",
   data() {
     return {
       game: null,
@@ -48,7 +42,7 @@ export default {
 };
 </script>
 
-<style lang='scss'>
+<style lang="scss">
 body {
   margin: 0;
   padding: 0;
