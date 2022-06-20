@@ -1,59 +1,59 @@
 {
-  "name": "glockenspiel",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build --public ./",
-    "lint": "vue-cli-service lint"
-  },
-  "dependencies": {
-    "@vue/cli": "^4.5.11",
-    "axios": "^0.21.1",
-    "core-js": "^2.6.5",
-    "postcss-unique-selectors": "^4.0.1",
-    "sass": "^1.22.9",
-    "sass-loader": "^7.1.0",
-    "socket.io-client": "^2.2.0",
-    "vue": "^2.6.10",
-    "vue-moment": "^4.0.0",
-    "vue-socket.io": "^3.0.7",
-    "vue-socket.io-extended": "^4.0.0",
-    "vue-spinners": "^1.0.2"
-  },
-  "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.10.0",
-    "@vue/cli-plugin-eslint": "^3.10.0",
-    "@vue/cli-service": "^4.5.11",
-    "@vue/eslint-config-prettier": "^5.0.0",
-    "babel-eslint": "^10.0.1",
-    "eslint": "^5.16.0",
-    "eslint-plugin-prettier": "^3.1.0",
-    "eslint-plugin-vue": "^5.0.0",
-    "prettier": "^1.18.2",
-    "vue-template-compiler": "^2.6.12"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
+    "name": "glockenspiel",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "serve": "vue-cli-service serve",
+        "build": "vue-cli-service build --public ./",
+        "lint": "vue-cli-service lint"
     },
-    "extends": [
-      "plugin:vue/essential",
-      "@vue/prettier"
-    ],
-    "rules": {},
-    "parserOptions": {
-      "parser": "babel-eslint"
-    }
-  },
-  "postcss": {
-    "plugins": {
-      "autoprefixer": {}
-    }
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions"
-  ]
+    "dependencies": {
+        "@vue/cli": "^5.0.6",
+        "axios": "^0.21.4",
+        "core-js": "2.6.5",
+        "postcss-unique-selectors": "4.0.1",
+        "sass": "1.22.9",
+        "sass-loader": "7.1.0",
+        "socket.io-client": "^2.4.0",
+        "vue": "2.6.10",
+        "vue-moment": "^4.1.0",
+        "vue-socket.io": "3.0.7",
+        "vue-socket.io-extended": "4.0.0",
+        "vue-spinners": "1.0.2"
+    },
+    "devDependencies": {
+        "@vue/cli-plugin-babel": "3.10.0",
+        "@vue/cli-plugin-eslint": "5.0.6",
+        "@vue/cli-service": "5.0.6",
+        "@vue/eslint-config-prettier": "5.0.0",
+        "babel-eslint": "10.0.1",
+        "eslint": "5.16.0",
+        "eslint-plugin-prettier": "3.1.0",
+        "eslint-plugin-vue": "5.0.0",
+        "prettier": "1.18.2",
+        "vue-template-compiler": "2.6.12"
+    },
+    "eslintConfig": {
+        "root": true,
+        "env": {
+            "node": true
+        },
+        "extends": [
+            "plugin:vue/essential",
+            "@vue/prettier"
+        ],
+        "rules": {},
+        "parserOptions": {
+            "parser": "babel-eslint"
+        }
+    },
+    "postcss": {
+        "plugins": {
+            "autoprefixer": {}
+        }
+    },
+    "browserslist": [
+        "> 1%",
+        "last 2 versions"
+    ]
 }
