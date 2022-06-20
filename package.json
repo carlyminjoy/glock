@@ -2,6 +2,9 @@
     "name": "glockenspiel",
     "version": "0.1.0",
     "private": true,
+    "engines": {
+        "node": "12.x.x"
+    },
     "scripts": {
         "serve": "vue-cli-service serve",
         "build": "vue-cli-service build --public ./",
@@ -22,30 +25,9 @@
         "vue-spinners": "1.0.2"
     },
     "devDependencies": {
-        "@vue/cli-plugin-babel": "3.10.0",
-        "@vue/cli-plugin-eslint": "5.0.6",
-        "@vue/cli-service": "5.0.6",
-        "@vue/eslint-config-prettier": "5.0.0",
-        "babel-eslint": "10.0.1",
-        "eslint": "5.16.0",
-        "eslint-plugin-prettier": "3.1.0",
-        "eslint-plugin-vue": "5.0.0",
-        "prettier": "1.18.2",
+        "@vue/cli-plugin-babel": "^3.10.0",
+        "@vue/cli-service": "^5.0.6",
         "vue-template-compiler": "2.6.12"
-    },
-    "eslintConfig": {
-        "root": true,
-        "env": {
-            "node": true
-        },
-        "extends": [
-            "plugin:vue/essential",
-            "@vue/prettier"
-        ],
-        "rules": {},
-        "parserOptions": {
-            "parser": "babel-eslint"
-        }
     },
     "postcss": {
         "plugins": {
