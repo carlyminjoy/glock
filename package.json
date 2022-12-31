@@ -16,7 +16,7 @@
         "core-js": "2.6.5",
         "postcss-unique-selectors": "4.0.1",
         "sass": "1.22.9",
-        "sass-loader": "7.1.0",
+        "sass-loader": "13.2.0",
         "socket.io-client": "^2.4.0",
         "vue": "2.6.10",
         "vue-moment": "^4.1.0",
@@ -25,8 +25,8 @@
         "vue-spinners": "1.0.2"
     },
     "devDependencies": {
-        "@vue/cli-plugin-babel": "^3.10.0",
-        "@vue/cli-service": "^5.0.6",
+        "@vue/cli-plugin-babel": "^5.0.8",
+        "@vue/cli-service": "^5.0.8",
         "vue-template-compiler": "2.6.12"
     },
     "postcss": {
